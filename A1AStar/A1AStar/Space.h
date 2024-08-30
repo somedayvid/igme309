@@ -3,7 +3,7 @@
 class Space :  public Characters
 {
 public:
-	Space();
+	Space(int x, int y);
 	~Space();
 };
 
