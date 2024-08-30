@@ -1,6 +1,9 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\A1AStar",
+    "\\A1AStar\\A1AStar"
   ],
+  "SelectedNode": "\\A1AStar\\A1AStar\\Characters.h",
   "PreviewInSolutionExplorer": false
 }

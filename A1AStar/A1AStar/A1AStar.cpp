@@ -5,6 +5,7 @@
 #include <string>
 #include <array>
 #include <Windows.h>
+#include <random>
 
 #include "Board.h"
 
@@ -12,6 +13,8 @@ using namespace std;
 
 int main()
 {
+
+	srand(time(NULL));
 	Board* gameBoard = new Board(10, 10);
 
 	gameBoard->displayBoard();
