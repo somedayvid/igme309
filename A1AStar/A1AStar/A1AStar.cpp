@@ -17,5 +17,10 @@ int main()
 	srand(time(NULL));
 	Board* gameBoard = new Board(10, 10);
 
-	gameBoard->displayBoard();
+	while (gameBoard->isPlayerAlive()) {
+		gameBoard->displayBoard();
+		gameBoard->movePlayer();
+	}
+
+
 }

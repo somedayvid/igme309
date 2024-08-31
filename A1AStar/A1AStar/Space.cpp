@@ -1,9 +1,10 @@
 #include "Space.h"
 
-Space::Space()
+Space::Space(int x, int y)
 {
 	type = "Space";
-	priority = 0;
+	xPos = x;
+	yPos = y;
 }
 
 Space::~Space()
