@@ -2,7 +2,17 @@
 
 Board::Board()
 {
+	boardHeight = rand() % 25 + 10;
+	boardLength = rand() % 25 + 10;
 
+	alive = true;
+
+	for (int i = 0; i < boardLength; ++i) {
+		vector<Characters*> thing;
+		board.push_back(thing);
+	}
+
+	populateBoard();
 }
 
 Board::Board(int length, int height)
@@ -33,16 +43,16 @@ void Board::movePlayer()
 
 	switch (input) {
 		case 'w':
-			yMove = -1;
-			break;
-		case 'a':
 			xMove = -1;
 			break;
+		case 'a':
+			yMove = -1;
+			break;
 		case 's':
-			yMove = 1;
+			xMove = 1;
 			break;
 		case 'd':
-			xMove = 1;
+			yMove = 1;
 			break;
 	}
 
@@ -56,27 +66,39 @@ void Board::moveEnemies()
 
 void Board::updateBoard(int x, int y)
 {
-	holdingSpot.push_back(board[playerPtr->xPos][playerPtr->yPos]);
-	holdingSpot.push_back(board[playerPtr->xPos + x][playerPtr->yPos + y]);
+	//boardheight is x and boardlength is y bc of how the vectors are contained
+	if (playerPtr->xPos + x <= boardHeight - 1 && 
+		playerPtr->yPos + y <= boardLength - 1 && 
+		playerPtr->xPos + x >= 0 && 
+		playerPtr->yPos + y >= 0) {
+		if (board[playerPtr->xPos + x][playerPtr->yPos + y]->type == "Space") {
+			holdingSpot.push_back(board[playerPtr->xPos][playerPtr->yPos]);
+			holdingSpot.push_back(board[playerPtr->xPos + x][playerPtr->yPos + y]);
 
-	board[playerPtr->xPos][playerPtr->yPos] = NULL;
-	board[playerPtr->xPos + x][playerPtr->yPos + y] = NULL;
+			board[playerPtr->xPos][playerPtr->yPos] = NULL;
+			board[playerPtr->xPos + x][playerPtr->yPos + y] = NULL;
 
-	board[playerPtr->xPos][playerPtr->yPos] = holdingSpot[1];
-	board[playerPtr->xPos + x][playerPtr->yPos + y] = holdingSpot[0];
+			board[playerPtr->xPos][playerPtr->yPos] = holdingSpot[1];
+			board[playerPtr->xPos + x][playerPtr->yPos + y] = holdingSpot[0];
 
-	board[playerPtr->xPos][playerPtr->yPos]->updatePosition(playerPtr->xPos, playerPtr->yPos);
-	playerPtr->updatePosition(playerPtr->xPos + x, playerPtr->yPos + y);
+			board[playerPtr->xPos][playerPtr->yPos]->updatePosition(playerPtr->xPos, playerPtr->yPos);
+			playerPtr->updatePosition(playerPtr->xPos + x, playerPtr->yPos + y);
 
-	holdingSpot.clear();
+			holdingSpot.clear();
+		}
+		else if (board[playerPtr->xPos + x][playerPtr->yPos + y]->type == "Enemy") {
+			delete board[playerPtr->xPos + x][playerPtr->yPos + y];
+			Characters* newSpace = new Space(playerPtr->xPos + x, playerPtr->yPos + y);
+			board[playerPtr->xPos + x][playerPtr->yPos + y] = newSpace;
+		}
+	}
 }
 
 void Board::displayBoard()
 {
 	for (int i = 0; i < boardHeight; ++i) {
 		for (int j = 0; j < boardLength; ++j) {
-			//board display is [j][i] for orientation purposes x and y pos do not need to be adjusted anywhere else
-			string tempType = board[j][i]->type;
+			string tempType = board[i][j]->type;
 			if (tempType == "Space") {
 				cout << 'x';
 			}
@@ -99,8 +121,8 @@ void Board::populateBoard()
 	for (unsigned short i = 0; i < boardHeight; ++i) {
 		for (unsigned short j = 0; j < boardLength; ++j) {
 			Characters* object;
-			if (rand() % 10 >= 8) {
-				object = new Wall(i, j);
+			if (rand() % 10 >= 9) {
+				object = new Enemy(i, j);
 			}
 			else {
 				object = new Space(i, j);
@@ -108,8 +130,6 @@ void Board::populateBoard()
 			board[i].push_back(object);
 		}
 	}
-
-
 
 	Player* player = new Player(4,7);
 	playerPtr = player;

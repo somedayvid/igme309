@@ -2,11 +2,7 @@
 <Project>
   <ProjectOutputs>
     <ProjectOutput>
-<<<<<<< HEAD
       <FullPath>C:\Users\david\Documents\GitHub\igme309\A1AStar\x64\Debug\A1AStar.exe</FullPath>
-=======
-      <FullPath>D:\Profiles\dg8516\Source\Repos\somedayvid\igme309\A1AStar\x64\Debug\A1AStar.exe</FullPath>
->>>>>>> 856221b42980c327cd10f584d4b6c661cd087a7e
     </ProjectOutput>
   </ProjectOutputs>
   <ContentFiles />

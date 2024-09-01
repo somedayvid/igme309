@@ -15,7 +15,7 @@ int main()
 {
 
 	srand(time(NULL));
-	Board* gameBoard = new Board(10, 10);
+	Board* gameBoard = new Board(10,10);
 
 	while (gameBoard->isPlayerAlive()) {
 		gameBoard->displayBoard();
