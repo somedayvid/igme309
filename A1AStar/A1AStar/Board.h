@@ -40,5 +40,8 @@ public:
 	void updateBoard(int x, int y);
 	void displayBoard();
 	void populateBoard();
+	void assignCosts();
 	bool isPlayerAlive();
+	void moveEnemy(Enemy* enemyToMove);
+	bool enemyMoveCheck(int x, int y);
 };

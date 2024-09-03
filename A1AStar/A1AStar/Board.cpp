@@ -91,6 +91,7 @@ void Board::updateBoard(int x, int y)
 			Characters* newSpace = new Space(playerPtr->xPos + x, playerPtr->yPos + y);
 			board[playerPtr->xPos + x][playerPtr->yPos + y] = newSpace;
 		}
+		assignCosts();
 	}
 }
 
@@ -100,7 +101,7 @@ void Board::displayBoard()
 		for (int j = 0; j < boardLength; ++j) {
 			string tempType = board[i][j]->type;
 			if (tempType == "Space") {
-				cout << 'x';
+				cout << board[i][j]->cost;
 			}
 			else if (tempType == "Wall") {
 				cout << 'W';
@@ -111,6 +112,7 @@ void Board::displayBoard()
 			else if (tempType == "Player") {
 				cout << 'P';
 			}
+			cout << " ";
 		}
 		cout << endl;
 	}
@@ -122,7 +124,7 @@ void Board::populateBoard()
 		for (unsigned short j = 0; j < boardLength; ++j) {
 			Characters* object;
 			if (rand() % 10 >= 9) {
-				object = new Enemy(i, j);
+				object = new Wall(i, j);
 			}
 			else {
 				object = new Space(i, j);
@@ -131,14 +133,63 @@ void Board::populateBoard()
 		}
 	}
 
-	Player* player = new Player(4,7);
+	Player* player = new Player(3,3);
 	playerPtr = player;
 	board[playerPtr->xPos][playerPtr->yPos] = playerPtr;
+	assignCosts();
+}
+
+void Board::assignCosts() {
+	for (unsigned short i = 0; i < boardHeight; ++i) {
+		for (unsigned short j = 0; j < boardLength; ++j) {
+			if (board[i][j]->type == "Space") {
+				board[i][j]->cost = abs(i - playerPtr->xPos) + abs(j - playerPtr->yPos);
+			}
+		}
+	}
 }
 
 bool Board::isPlayerAlive()
 {
 	return alive;
+}
+
+void Board::moveEnemy(Enemy* enemyToMove) {
+	vector<Characters*> spotsToCheck;
+
+	if ((enemyToMove->xPos + 1 <= boardHeight - 1) && 
+		(board[enemyToMove->xPos + 1][enemyToMove->yPos]->type == "Space"))
+	{
+		spotsToCheck.push_back(board[enemyToMove->xPos + 1][enemyToMove->yPos]);
+	}
+	if ((enemyToMove->yPos + 1 <= boardLength - 1) && 
+		(board[enemyToMove->xPos][enemyToMove->yPos + 1]->type == "Space"))
+	{
+		spotsToCheck.push_back(board[enemyToMove->xPos][enemyToMove->yPos + 1]);
+	}
+	if ((enemyToMove->xPos - 1 >= 0) &&
+		(board[enemyToMove->xPos - 1][enemyToMove->yPos]->type == "Space"))
+	{
+		spotsToCheck.push_back(board[enemyToMove->xPos - 1][enemyToMove->yPos]);
+
+	}
+	if ((enemyToMove->yPos - 1 >= 0) &&
+		(board[enemyToMove->xPos][enemyToMove->yPos - 1]->type == "Space"))
+	{
+		spotsToCheck.push_back(board[enemyToMove->xPos][enemyToMove->yPos - 1]);
+
+	}
+
+	for (Characters* spots : spotsToCheck) {
+		for (int i = 0; i < spotsToCheck.size(); ++i) {
+			if (spots == spotsToCheck[i]) {
+				enemyToMove->openList.push_back(spots);
+				break;
+			}
+		}
+	}
+
+
 }
 
 

@@ -5,7 +5,7 @@ Player::Player(int x, int y)
 	xPos = x;
 	yPos = y;
 	type = "Player";
-	priority = 100;
+	cost = 0;
 }
 
 Player::~Player()

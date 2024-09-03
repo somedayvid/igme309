@@ -4,7 +4,6 @@ Characters::Characters()
 {
 	xPos = 0;
 	yPos = 0;
-	priority = 0;
 }
 
 void Characters::updatePosition(int x, int y)
