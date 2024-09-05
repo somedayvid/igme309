@@ -26,16 +26,17 @@ private:
 	unsigned short boardHeight;
 	vector<vector<Characters*>> board;
 	vector<Characters*> holdingSpot;
+	vector<Characters*> tempEnemies;
+	vector<Enemy*> listOfEnemies;
 	Player* playerPtr;
-
+	int level;
 	bool alive;
-
-	char previousKeyPress;
-	char currentKeyPress;
+	
 public:
 	Board();
 	Board(int length, int height);
 	~Board();
+
 	void movePlayer();
 	void moveEnemies();
 	void updateBoard(int x, int y, Characters* characterToMove);

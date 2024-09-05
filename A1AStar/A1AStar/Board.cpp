@@ -6,6 +6,7 @@ Board::Board()
 	boardLength = rand() % 25 + 10;
 
 	alive = true;
+	level = 1;
 
 	for (int i = 0; i < boardLength; ++i) {
 		vector<Characters*> thing;
@@ -21,6 +22,7 @@ Board::Board(int length, int height)
 	boardLength = length;
 
 	alive = true;
+	level = 1;
 
 	for (int i = 0; i < length; ++i) {
 		vector<Characters*> thing;
@@ -60,11 +62,10 @@ void Board::movePlayer()
 	yMove += playerPtr->yPos;
 
 	updateBoard(xMove, yMove, playerPtr);
-}
 
-void Board::moveEnemies()
-{
-
+	for (Enemy* enemies : listOfEnemies) {
+		moveEnemy(enemies);
+	}
 }
 
 void Board::updateBoard(int x, int y, Characters* characterToMove)
@@ -102,7 +103,7 @@ void Board::displayBoard()
 		for (int j = 0; j < boardLength; ++j) {
 			string tempType = board[i][j]->type;
 			if (tempType == "Space") {
-				cout << board[i][j]->hCost;
+				cout << 's';
 			}
 			else if (tempType == "Wall") {
 				cout << 'W';
@@ -123,16 +124,22 @@ void Board::populateBoard()
 {
 	for (unsigned short i = 0; i < boardHeight; ++i) {
 		for (unsigned short j = 0; j < boardLength; ++j) {
-			Characters* object;
 			if (rand() % 10 >= 9) {
-				object = new Wall(i, j);
+				Wall* object = new Wall(i, j);
+				board[i].push_back(object);
 			}
 			else {
-				object = new Space(i, j);
+				Space* object = new Space(i, j);
+				board[i].push_back(object);
 			}
-			board[i].push_back(object);
 		}
 	}
+	
+
+	Enemy* object = new Enemy(0, 0);
+	listOfEnemies.push_back(object);
+	board[0][0] = object;
+
 
 	Player* player = new Player(3,3);
 	playerPtr = player;
@@ -161,32 +168,46 @@ void Board::moveEnemy(Enemy* enemyToMove) {
 	Characters* current = start;
 
 	Characters* lowestCostSpace;
+	
+	enemyToMove->openList.clear();
+	enemyToMove->closedList.clear();
 
 	enemyToMove->closedList.push_back(enemyToMove);
+
+	goal->parent = nullptr;
+
+	for (unsigned short i = 0; i < boardHeight; ++i) {
+		for (unsigned short j = 0; j < boardLength; ++j) {
+			if (board[i][j]->type == "Space") {
+				board[i][j]->parent = nullptr;
+				board[i][j]->moveCost = 0;
+			}
+		}
+	}
 
 	while (current != goal) {
 		vector<Characters*> spotsToCheck;
 
-		if ((enemyToMove->xPos + 1 <= boardHeight - 1) &&
-			(board[enemyToMove->xPos + 1][enemyToMove->yPos]->type == "Space"))
+		if ((current->xPos + 1 <= boardHeight - 1) &&
+			((board[current->xPos + 1][current->yPos]->type == "Space") || (board[current->xPos + 1][current->yPos]->type == "Player")))
 		{
-			spotsToCheck.push_back(board[enemyToMove->xPos + 1][enemyToMove->yPos]);
+			spotsToCheck.push_back(board[current->xPos + 1][current->yPos]);
 		}
-		if ((enemyToMove->yPos + 1 <= boardLength - 1) &&
-			(board[enemyToMove->xPos][enemyToMove->yPos + 1]->type == "Space"))
+		if ((current->yPos + 1 <= boardLength - 1) &&
+			((board[current->xPos][current->yPos + 1]->type == "Space") || (board[current->xPos][current->yPos + 1]->type == "Player")))
 		{
-			spotsToCheck.push_back(board[enemyToMove->xPos][enemyToMove->yPos + 1]);
+			spotsToCheck.push_back(board[current->xPos][current->yPos + 1]);
 		}
-		if ((enemyToMove->xPos - 1 >= 0) &&
-			(board[enemyToMove->xPos - 1][enemyToMove->yPos]->type == "Space"))
+		if ((current->xPos - 1 >= 0) &&
+			((board[current->xPos - 1][current->yPos]->type == "Space") || (board[current->xPos - 1][current->yPos]->type == "Player")))
 		{
-			spotsToCheck.push_back(board[enemyToMove->xPos - 1][enemyToMove->yPos]);
+			spotsToCheck.push_back(board[current->xPos - 1][current->yPos]);
 
 		}
-		if ((enemyToMove->yPos - 1 >= 0) &&
-			(board[enemyToMove->xPos][enemyToMove->yPos - 1]->type == "Space"))
+		if ((current->yPos - 1 >= 0) &&
+			((board[current->xPos][current->yPos - 1]->type == "Space") || (board[current->xPos][current->yPos - 1]->type == "Space")))
 		{
-			spotsToCheck.push_back(board[enemyToMove->xPos][enemyToMove->yPos - 1]);	
+			spotsToCheck.push_back(board[current->xPos][current->yPos - 1]);	
 
 		}
 
@@ -222,6 +243,4 @@ void Board::moveEnemy(Enemy* enemyToMove) {
 	}
 
 	updateBoard(current->xPos, current->yPos, enemyToMove);
-
-
 }
