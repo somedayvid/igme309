@@ -2,25 +2,34 @@
 //
 
 #include <iostream>
-#include <string>
-#include <array>
-#include <Windows.h>
 #include <random>
+#define _CRTDBG_MAP_ALLOC
+#include <cstdlib>
+#include <crtdbg.h>
 
 #include "Board.h"
 
 using namespace std;
 
-int main()
-{
-
+void wrapper() {
 	srand(time(NULL));
-	Board* gameBoard = new Board(10,10);
+
+	cout << "Welcome to Mini-Rogue!" << endl;
+
+	Board* gameBoard = new Board(10, 10);
 
 	while (gameBoard->isPlayerAlive()) {
 		gameBoard->displayBoard();
 		gameBoard->movePlayer();
 	}
 
-
+	gameBoard = nullptr;
+	delete gameBoard;
 }
+
+int main()
+{
+	wrapper();
+	_CrtDumpMemoryLeaks();
+}
+

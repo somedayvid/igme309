@@ -16,4 +16,6 @@ void Characters::updatePosition(int x, int y)
 
 Characters::~Characters()
 {
+	parent = nullptr;
+	delete parent;
 }

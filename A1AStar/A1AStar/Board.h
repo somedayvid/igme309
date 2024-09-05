@@ -38,13 +38,10 @@ public:
 	~Board();
 
 	void movePlayer();
-	void moveEnemies();
 	void updateBoard(int x, int y, Characters* characterToMove);
 	void displayBoard();
 	void populateBoard();
 	void assignCosts();
 	bool isPlayerAlive();
-	void moveEnemy(Enemy* enemyToMove);
-	bool enemyMoveCheck(int x, int y);
-	void aStarSearch(Space* nextSpace, Enemy* enemyToMove);
+	void aStarSearch(Enemy* enemyToMove);
 };

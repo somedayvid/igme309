@@ -1,5 +1,8 @@
 #include "Board.h"
 
+/// <summary>
+/// Unparameterized constructor which generates a board of a random legnth and width that is greater than 10 x 10
+/// </summary>
 Board::Board()
 {
 	boardHeight = rand() % 25 + 10;
@@ -16,6 +19,11 @@ Board::Board()
 	populateBoard();
 }
 
+/// <summary>
+/// Parameterized constructor which generates a board of the specified length and height
+/// </summary>
+/// <param name="length">How mamy tiles the board is from left to right</param>
+/// <param name="height">How many tiles the board is from top to bottom</param>
 Board::Board(int length, int height)
 {
 	boardHeight = height;
@@ -32,10 +40,26 @@ Board::Board(int length, int height)
 	populateBoard();
 }
 
+/// <summary>
+/// Deconstructor for board
+/// </summary>
 Board::~Board()
 {
+	playerPtr = nullptr;
+	delete playerPtr;
+
+	for (unsigned short i = 0; i < boardHeight; ++i) {
+		for (unsigned short j = 0; j < boardLength; ++j) {
+			board[i][j] = nullptr;
+			delete board[i][j];
+		}
+	}
 }
 
+
+/// <summary>
+/// Takes in input from the user and prompts a move on the board accordingly
+/// </summary>
 void Board::movePlayer()
 {
 	char input;
@@ -56,6 +80,8 @@ void Board::movePlayer()
 		case 'd':
 			yMove = 1;
 			break;
+		case 'l':
+			alive = false;
 	}
 	
 	xMove += playerPtr->xPos;
@@ -63,15 +89,22 @@ void Board::movePlayer()
 
 	updateBoard(xMove, yMove, playerPtr);
 
+	//enemies move immediately after the player's move
 	for (Enemy* enemies : listOfEnemies) {
-		moveEnemy(enemies);
+		aStarSearch(enemies);
 	}
 }
 
+/// <summary>
+/// Moves enemies and the player around on the board
+/// </summary>
+/// <param name="x">The x position of the next tile that is being moved to</param>
+/// <param name="y">The y position of the next tile that is being moved to</param>
+/// <param name="characterToMove">The character that is to be moved, either player or enemy</param>
 void Board::updateBoard(int x, int y, Characters* characterToMove)
 {
 	//boardheight is x and boardlength is y bc of how the vectors are contained
-	if (x <= boardHeight - 1 && y <= boardLength - 1 && x >= 0 && y >= 0) {
+	if (x <= boardHeight - 1 && y <= boardLength - 1 && x >= 0 && y >= 0) { 
 		if (board[x][y]->type == "Space") {
 			holdingSpot.push_back(board[characterToMove->xPos][characterToMove->yPos]);
 			holdingSpot.push_back(board[x][y]);
@@ -87,9 +120,11 @@ void Board::updateBoard(int x, int y, Characters* characterToMove)
 
 			holdingSpot.clear();
 		}
+		//enemies ignore other enemies in their astar algorithm so they are not capable of triggering this piece of code
 		else if (board[x][y]->type == "Enemy") {
-			delete board[x][y];
 			board[x][y] = nullptr;
+			delete board[x][y];
+
 			Characters* newSpace = new Space(x, y);
 			board[x][y] = newSpace;
 		}
@@ -97,6 +132,9 @@ void Board::updateBoard(int x, int y, Characters* characterToMove)
 	}
 }
 
+/// <summary>
+/// Displays the board state
+/// </summary>
 void Board::displayBoard()
 {
 	for (int i = 0; i < boardHeight; ++i) {
@@ -120,11 +158,14 @@ void Board::displayBoard()
 	}
 }
 
+/// <summary>
+/// Called on initialization in order to fill up the 2d matrix which contains the board
+/// </summary>
 void Board::populateBoard()
 {
 	for (unsigned short i = 0; i < boardHeight; ++i) {
 		for (unsigned short j = 0; j < boardLength; ++j) {
-			if (rand() % 10 >= 9) {
+			if (rand() % 10 >= 8) {
 				Wall* object = new Wall(i, j);
 				board[i].push_back(object);
 			}
@@ -134,12 +175,10 @@ void Board::populateBoard()
 			}
 		}
 	}
-	
 
 	Enemy* object = new Enemy(0, 0);
 	listOfEnemies.push_back(object);
 	board[0][0] = object;
-
 
 	Player* player = new Player(3,3);
 	playerPtr = player;
@@ -147,6 +186,9 @@ void Board::populateBoard()
 	assignCosts();
 }
 
+/// <summary>
+/// Updates the heuristic cost of each space character as the player moves around the board for the purposes of A*
+/// </summary>
 void Board::assignCosts() {
 	for (unsigned short i = 0; i < boardHeight; ++i) {
 		for (unsigned short j = 0; j < boardLength; ++j) {
@@ -157,25 +199,37 @@ void Board::assignCosts() {
 	}
 }
 
+/// <summary>
+/// Is the player alive
+/// </summary>
+/// <returns>Boolean representing the livingness of the player</returns>
 bool Board::isPlayerAlive()
 {
 	return alive;
 }
 
-void Board::moveEnemy(Enemy* enemyToMove) {
+/// <summary>
+/// A* algorithm search for the enemies so they can pathfind around walls towards the player, implemented with manhatten distance
+/// </summary>
+/// <param name="enemyToMove">The enemy that is moving now</param>
+void Board::aStarSearch(Enemy* enemyToMove) {
 	Characters* goal = playerPtr;
 	Characters* start = enemyToMove;
 	Characters* current = start;
 
 	Characters* lowestCostSpace;
 	
+	//clears the variables of the enemy for a new search
 	enemyToMove->openList.clear();
 	enemyToMove->closedList.clear();
 
+	//adds itself to the closedlist
 	enemyToMove->closedList.push_back(enemyToMove);
 
+	//clears the parent of the goal so player can be added to openlist and detected
 	goal->parent = nullptr;
 
+	//clears the spaces's variables for next enemy a* check
 	for (unsigned short i = 0; i < boardHeight; ++i) {
 		for (unsigned short j = 0; j < boardLength; ++j) {
 			if (board[i][j]->type == "Space") {
@@ -188,6 +242,7 @@ void Board::moveEnemy(Enemy* enemyToMove) {
 	while (current != goal) {
 		vector<Characters*> spotsToCheck;
 
+		//checks around the character for spaces that it can check
 		if ((current->xPos + 1 <= boardHeight - 1) &&
 			((board[current->xPos + 1][current->yPos]->type == "Space") || (board[current->xPos + 1][current->yPos]->type == "Player")))
 		{
@@ -211,15 +266,17 @@ void Board::moveEnemy(Enemy* enemyToMove) {
 
 		}
 
+		//of the possible spaces it could check if they do not have a parent and are not on the openlist
 		for (Characters* spots : spotsToCheck) {
 			if (spots->parent == nullptr && find(enemyToMove->openList.begin(), enemyToMove->openList.end(), spots) == enemyToMove->openList.end()) {
-				enemyToMove->openList.push_back(spots);
-				spots->parent = current;
-				spots->moveCost = spots->hCost + current->moveCost;
+				enemyToMove->openList.push_back(spots);				//we add them to the open list
+				spots->parent = current;							//and parent it to the current character we are on
+				spots->moveCost = spots->hCost + current->moveCost; //and then adjust the movecost according to the total cost to move from the start to this character
 			}
 			else {
 				if (spots->moveCost > spots->hCost + current->moveCost) {
 					spots->parent = current;
+					spots->moveCost = spots->hCost + current->moveCost;
 				}
 			}
 		}
@@ -243,4 +300,14 @@ void Board::moveEnemy(Enemy* enemyToMove) {
 	}
 
 	updateBoard(current->xPos, current->yPos, enemyToMove);
+
+	goal = nullptr;
+	start = nullptr;
+	current = nullptr;
+	lowestCostSpace = nullptr;
+
+	delete goal;
+	delete start;
+	delete current;
+	delete lowestCostSpace;
 }
