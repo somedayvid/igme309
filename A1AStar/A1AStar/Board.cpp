@@ -55,8 +55,11 @@ void Board::movePlayer()
 			yMove = 1;
 			break;
 	}
+	
+	xMove += playerPtr->xPos;
+	yMove += playerPtr->yPos;
 
-	updateBoard(xMove, yMove);
+	updateBoard(xMove, yMove, playerPtr);
 }
 
 void Board::moveEnemies()
@@ -64,32 +67,30 @@ void Board::moveEnemies()
 
 }
 
-void Board::updateBoard(int x, int y)
+void Board::updateBoard(int x, int y, Characters* characterToMove)
 {
 	//boardheight is x and boardlength is y bc of how the vectors are contained
-	if (playerPtr->xPos + x <= boardHeight - 1 && 
-		playerPtr->yPos + y <= boardLength - 1 && 
-		playerPtr->xPos + x >= 0 && 
-		playerPtr->yPos + y >= 0) {
-		if (board[playerPtr->xPos + x][playerPtr->yPos + y]->type == "Space") {
-			holdingSpot.push_back(board[playerPtr->xPos][playerPtr->yPos]);
-			holdingSpot.push_back(board[playerPtr->xPos + x][playerPtr->yPos + y]);
+	if (x <= boardHeight - 1 && y <= boardLength - 1 && x >= 0 && y >= 0) {
+		if (board[x][y]->type == "Space") {
+			holdingSpot.push_back(board[characterToMove->xPos][characterToMove->yPos]);
+			holdingSpot.push_back(board[x][y]);
 
-			board[playerPtr->xPos][playerPtr->yPos] = NULL;
-			board[playerPtr->xPos + x][playerPtr->yPos + y] = NULL;
+			board[characterToMove->xPos][characterToMove->yPos] = NULL;
+			board[x][y] = NULL;
 
-			board[playerPtr->xPos][playerPtr->yPos] = holdingSpot[1];
-			board[playerPtr->xPos + x][playerPtr->yPos + y] = holdingSpot[0];
+			board[characterToMove->xPos][characterToMove->yPos] = holdingSpot[1];
+			board[x][y] = holdingSpot[0];
 
-			board[playerPtr->xPos][playerPtr->yPos]->updatePosition(playerPtr->xPos, playerPtr->yPos);
-			playerPtr->updatePosition(playerPtr->xPos + x, playerPtr->yPos + y);
+			board[characterToMove->xPos][characterToMove->yPos]->updatePosition(characterToMove->xPos, characterToMove->yPos);
+			characterToMove->updatePosition(x, y);
 
 			holdingSpot.clear();
 		}
-		else if (board[playerPtr->xPos + x][playerPtr->yPos + y]->type == "Enemy") {
-			delete board[playerPtr->xPos + x][playerPtr->yPos + y];
-			Characters* newSpace = new Space(playerPtr->xPos + x, playerPtr->yPos + y);
-			board[playerPtr->xPos + x][playerPtr->yPos + y] = newSpace;
+		else if (board[x][y]->type == "Enemy") {
+			delete board[x][y];
+			board[x][y] = nullptr;
+			Characters* newSpace = new Space(x, y);
+			board[x][y] = newSpace;
 		}
 		assignCosts();
 	}
@@ -101,7 +102,7 @@ void Board::displayBoard()
 		for (int j = 0; j < boardLength; ++j) {
 			string tempType = board[i][j]->type;
 			if (tempType == "Space") {
-				cout << board[i][j]->cost;
+				cout << board[i][j]->hCost;
 			}
 			else if (tempType == "Wall") {
 				cout << 'W';
@@ -143,7 +144,7 @@ void Board::assignCosts() {
 	for (unsigned short i = 0; i < boardHeight; ++i) {
 		for (unsigned short j = 0; j < boardLength; ++j) {
 			if (board[i][j]->type == "Space") {
-				board[i][j]->cost = abs(i - playerPtr->xPos) + abs(j - playerPtr->yPos);
+				board[i][j]->hCost = abs(i - playerPtr->xPos) + abs(j - playerPtr->yPos);
 			}
 		}
 	}
@@ -155,42 +156,72 @@ bool Board::isPlayerAlive()
 }
 
 void Board::moveEnemy(Enemy* enemyToMove) {
-	vector<Characters*> spotsToCheck;
+	Characters* goal = playerPtr;
+	Characters* start = enemyToMove;
+	Characters* current = start;
 
-	if ((enemyToMove->xPos + 1 <= boardHeight - 1) && 
-		(board[enemyToMove->xPos + 1][enemyToMove->yPos]->type == "Space"))
-	{
-		spotsToCheck.push_back(board[enemyToMove->xPos + 1][enemyToMove->yPos]);
-	}
-	if ((enemyToMove->yPos + 1 <= boardLength - 1) && 
-		(board[enemyToMove->xPos][enemyToMove->yPos + 1]->type == "Space"))
-	{
-		spotsToCheck.push_back(board[enemyToMove->xPos][enemyToMove->yPos + 1]);
-	}
-	if ((enemyToMove->xPos - 1 >= 0) &&
-		(board[enemyToMove->xPos - 1][enemyToMove->yPos]->type == "Space"))
-	{
-		spotsToCheck.push_back(board[enemyToMove->xPos - 1][enemyToMove->yPos]);
+	Characters* lowestCostSpace;
 
-	}
-	if ((enemyToMove->yPos - 1 >= 0) &&
-		(board[enemyToMove->xPos][enemyToMove->yPos - 1]->type == "Space"))
-	{
-		spotsToCheck.push_back(board[enemyToMove->xPos][enemyToMove->yPos - 1]);
+	enemyToMove->closedList.push_back(enemyToMove);
 
-	}
+	while (current != goal) {
+		vector<Characters*> spotsToCheck;
 
-	for (Characters* spots : spotsToCheck) {
-		for (int i = 0; i < spotsToCheck.size(); ++i) {
-			if (spots == spotsToCheck[i]) {
+		if ((enemyToMove->xPos + 1 <= boardHeight - 1) &&
+			(board[enemyToMove->xPos + 1][enemyToMove->yPos]->type == "Space"))
+		{
+			spotsToCheck.push_back(board[enemyToMove->xPos + 1][enemyToMove->yPos]);
+		}
+		if ((enemyToMove->yPos + 1 <= boardLength - 1) &&
+			(board[enemyToMove->xPos][enemyToMove->yPos + 1]->type == "Space"))
+		{
+			spotsToCheck.push_back(board[enemyToMove->xPos][enemyToMove->yPos + 1]);
+		}
+		if ((enemyToMove->xPos - 1 >= 0) &&
+			(board[enemyToMove->xPos - 1][enemyToMove->yPos]->type == "Space"))
+		{
+			spotsToCheck.push_back(board[enemyToMove->xPos - 1][enemyToMove->yPos]);
+
+		}
+		if ((enemyToMove->yPos - 1 >= 0) &&
+			(board[enemyToMove->xPos][enemyToMove->yPos - 1]->type == "Space"))
+		{
+			spotsToCheck.push_back(board[enemyToMove->xPos][enemyToMove->yPos - 1]);	
+
+		}
+
+		for (Characters* spots : spotsToCheck) {
+			if (spots->parent == nullptr && find(enemyToMove->openList.begin(), enemyToMove->openList.end(), spots) == enemyToMove->openList.end()) {
 				enemyToMove->openList.push_back(spots);
-				break;
+				spots->parent = current;
+				spots->moveCost = spots->hCost + current->moveCost;
+			}
+			else {
+				if (spots->moveCost > spots->hCost + current->moveCost) {
+					spots->parent = current;
+				}
 			}
 		}
+
+		lowestCostSpace = enemyToMove->openList[0];
+
+		for (Characters* spots : enemyToMove->openList) {
+			if (lowestCostSpace->moveCost > spots->moveCost) {
+				lowestCostSpace = spots;
+			}
+		}
+
+		enemyToMove->closedList.push_back(lowestCostSpace);
+		enemyToMove->openList.erase(find(enemyToMove->openList.begin(), enemyToMove->openList.end(), lowestCostSpace));
+
+		current = lowestCostSpace;
 	}
+
+	while (current->parent != start) {
+		current = current->parent;
+	}
+
+	updateBoard(current->xPos, current->yPos, enemyToMove);
 
 
 }
-
-
-

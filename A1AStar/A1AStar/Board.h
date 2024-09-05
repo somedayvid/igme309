@@ -15,6 +15,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
+#include <algorithm>
 
 using namespace std;
 
@@ -37,11 +38,12 @@ public:
 	~Board();
 	void movePlayer();
 	void moveEnemies();
-	void updateBoard(int x, int y);
+	void updateBoard(int x, int y, Characters* characterToMove);
 	void displayBoard();
 	void populateBoard();
 	void assignCosts();
 	bool isPlayerAlive();
 	void moveEnemy(Enemy* enemyToMove);
 	bool enemyMoveCheck(int x, int y);
+	void aStarSearch(Space* nextSpace, Enemy* enemyToMove);
 };

@@ -5,8 +5,10 @@ class Characters
 public:
 	unsigned short xPos;
 	unsigned short yPos;
-	int cost;
+	int hCost;
 	std::string type;
+	int moveCost;
+	Characters* parent;
 
 	Characters();
 	void updatePosition(int x, int y);

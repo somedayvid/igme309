@@ -1,5 +1,6 @@
 #pragma once
 #include "Characters.h"
+#include "Space.h"
 #include <vector>
 
 using namespace std;
