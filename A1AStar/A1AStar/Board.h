@@ -29,10 +29,9 @@ private:
 	vector<Characters*> tempEnemies;
 	vector<Enemy*> listOfEnemies;
 	Player* playerPtr;
-	int level;
 	bool alive;
-	
 public:
+	int level;
 	Board();
 	Board(int length, int height);
 	~Board();

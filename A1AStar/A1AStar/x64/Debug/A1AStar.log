@@ -1,2 +1,5 @@
-﻿  Board.cpp
-  A1AStar.vcxproj -> D:\Profiles\dg8516\Source\Repos\somedayvid\igme309\A1AStar\x64\Debug\A1AStar.exe
+﻿  A1AStar.cpp
+C:\Users\david\Documents\GitHub\igme309\A1AStar\A1AStar\A1AStar.cpp(15,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+  Board.cpp
+  Generating Code...
+  A1AStar.vcxproj -> C:\Users\david\Documents\GitHub\igme309\A1AStar\x64\Debug\A1AStar.exe
