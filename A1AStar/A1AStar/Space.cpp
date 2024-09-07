@@ -9,5 +9,4 @@ Space::Space(int x, int y)
 
 Space::~Space()
 {
-
 }

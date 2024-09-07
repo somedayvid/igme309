@@ -1,24 +1,41 @@
 /*When the term "character" is mentioned it basically means the parent class of every other object in the program as enemy, player, space, and wall all
-inherit from it, consider it sort like how unity considers gameObjects for objects that exist in the game*/
+inherit from it, consider it sort like how unity considers gameObjects for all objects that exist in the game
+
+X is considered the top to bottom coordinate 
+Y is considered the left to right coordinate
+
+//TODO look into bug where enemy moves back and forth in dead end
+//TODO make an escape case for when the enemy cannot actually find a way to the player
+*/
 #include "Board.h"
 
+#include <algorithm>
 
 /// <summary>
-/// Unparameterized constructor which generates a board of a random legnth and width that is greater than 10 x 10
+/// Parameterized constructor which generates a board of a random legnth and width that is greater than 10 x 10 
 /// </summary>
-Board::Board()
+Board::Board(int level)
 {
-	boardHeight = rand() % 25 + 10;
-	boardLength = rand() % 25 + 10;
+	columnMax = 40;
+	rowMax = 25;
 
+	columns = rand() % 15 + 10 + level;
+	rows = rand() % 15 + 10 + level;
+	allEnemiesDead = false;
+
+	//could not find clamp??? ;-;
+	if (rows > rowMax) { rows = rowMax; }
+	if (columns > columnMax) { columns = columnMax; }
+
+	maxEnemies = enemiesToSpawn = level;
 	alive = true;
-	level = 1;
 
-	for (int i = 0; i < boardLength; ++i) {
+	board.reserve(rows);
+	for (int i = 0; i < rows; ++i) {
 		vector<Characters*> thing;
+		thing.reserve(columns);
 		board.push_back(thing);
 	}
-
 	populateBoard();
 }
 
@@ -28,15 +45,16 @@ Board::Board()
 /// </summary>
 /// <param name="length">How mamy tiles the board is from left to right</param>
 /// <param name="height">How many tiles the board is from top to bottom</param>
-Board::Board(int length, int height)
+Board::Board(int height, int length, int level)
 {
-	boardHeight = height;
-	boardLength = length;
+	rows = height;
+	columns = length;
+	allEnemiesDead = false;
 
+	enemiesToSpawn = level;
 	alive = true;
-	level = 1;
 
-	for (int i = 0; i < length; ++i) {
+	for (int i = 0; i < rows; ++i) {
 		vector<Characters*> thing;
 		board.push_back(thing);
 	}
@@ -49,13 +67,10 @@ Board::Board(int length, int height)
 /// </summary>
 Board::~Board()
 {
-	playerPtr = nullptr;
-	delete playerPtr;
-
-	for (unsigned short i = 0; i < boardHeight; ++i) {
-		for (unsigned short j = 0; j < boardLength; ++j) {
-			board[i][j] = nullptr;
+	for (unsigned short i = 0; i < rows; ++i) {
+		for (unsigned short j = 0; j < columns; ++j) {
 			delete board[i][j];
+			board[i][j] = nullptr;
 		}
 	}
 }
@@ -94,8 +109,15 @@ void Board::movePlayer()
 	updateBoard(xMove, yMove, playerPtr);
 
 	//enemies move immediately after the player's move
-	for (Enemy* enemies : listOfEnemies) {
-		aStarSearch(enemies);
+	//if there are no more enemies left then we load the next level
+	if (listOfEnemies.size() > 0) {
+		for (Enemy* enemies : listOfEnemies) {
+			aStarSearch(enemies);
+		}
+	}
+	else {
+		allEnemiesDead = true;
+		displayBoard();
 	}
 }
 
@@ -108,7 +130,7 @@ void Board::movePlayer()
 void Board::updateBoard(int x, int y, Characters* characterToMove)
 {
 	//boardheight is x and boardlength is y bc of how the vectors are contained
-	if (x <= boardHeight - 1 && y <= boardLength - 1 && x >= 0 && y >= 0) { 
+	if (x <= rows - 1 && y <= columns - 1 && x >= 0 && y >= 0) { 
 		//checks if position trying to be moved is an empty space
 		if (board[x][y]->type == "Space") {
 			holdingSpot.push_back(board[characterToMove->xPos][characterToMove->yPos]);
@@ -132,8 +154,8 @@ void Board::updateBoard(int x, int y, Characters* characterToMove)
 
 			board[x][y] = new Space(x, y);
 			
-			holdingSpot[0] = nullptr;
 			delete holdingSpot[0];
+			holdingSpot[0] = nullptr;
 
 			holdingSpot.clear();
 		}
@@ -146,8 +168,10 @@ void Board::updateBoard(int x, int y, Characters* characterToMove)
 /// </summary>
 void Board::displayBoard()
 {
-	for (int i = 0; i < boardHeight; ++i) {
-		for (int j = 0; j < boardLength; ++j) {
+	//anything that begins with \033[1;nm where n is a number 
+	//is a color code to help differentiate characters from each other
+	for (int i = 0; i < rows; ++i) {
+		for (int j = 0; j < columns; ++j) {
 			string tempType = board[i][j]->type;
 			if (tempType == "Space") {
 				printf("\033[1;37ms\033[1;0m");
@@ -172,18 +196,38 @@ void Board::displayBoard()
 /// </summary>
 void Board::populateBoard()
 {
-	for (unsigned short i = 0; i < boardHeight; ++i) {
-		for (unsigned short j = 0; j < boardLength; ++j) {
-			if (rand() % 10 >= 8) {
-				board[i].push_back(new Wall(i, j));
-			}
-			else if (rand() % 100 >= 97) {
+	bool isPlayerSpawned = false;
+
+	//int playerToSpawnX = rand() % boardHeight;
+	//int playerToSpawnY = rand() % boardLength;
+
+	int spawnChanceModEnemy = 1;
+	int spawnChanceModWall = 1;
+
+	for (unsigned short i = 0; i < rows; ++i) {
+		for (unsigned short j = 0; j < columns; ++j) {
+			if ((i == rows - enemiesToSpawn - 1) && enemiesToSpawn >= maxEnemies - enemiesToSpawn ) {
 				Enemy* newEnemy = new Enemy(i, j);
 				listOfEnemies.push_back(newEnemy);
 				board[i].push_back(newEnemy);
+				enemiesToSpawn--;
 			}
 			else {
-				board[i].push_back(new Space(i,j));
+				if (rand() % 1000 >= 800 + spawnChanceModWall + maxEnemies * 10) {
+					board[i].push_back(new Wall(i, j));
+					spawnChanceModWall++;
+					spawnChanceModEnemy++;
+				}
+				else if (enemiesToSpawn != 0 && rand() % 1000 >= 925 - spawnChanceModEnemy) {
+					Enemy* newEnemy = new Enemy(i, j);
+					listOfEnemies.push_back(newEnemy);
+					board[i].push_back(newEnemy);
+					enemiesToSpawn--;
+				}
+				else {
+					board[i].push_back(new Space(i, j));
+					spawnChanceModEnemy++;
+				}
 			}
 		}
 	}
@@ -198,8 +242,8 @@ void Board::populateBoard()
 /// Updates the heuristic cost of each space character as the player moves around the board for the purposes of A*
 /// </summary>
 void Board::assignCosts() {
-	for (unsigned short i = 0; i < boardHeight; ++i) {
-		for (unsigned short j = 0; j < boardLength; ++j) {
+	for (unsigned short i = 0; i < rows; ++i) {
+		for (unsigned short j = 0; j < columns; ++j) {
 			if (board[i][j]->type == "Space") {
 				//calculated using manhatten distance
 				board[i][j]->hCost = abs(i - playerPtr->xPos) + abs(j - playerPtr->yPos);
@@ -226,7 +270,7 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 	Characters* start = enemyToMove;
 	Characters* current = start;
 
-	Characters* lowestCostSpace;
+	Characters* lowestCostSpace = nullptr;
 
 	bool canKillPlayer = false;
 	
@@ -241,8 +285,8 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 	goal->parent = nullptr;
 
 	//clears the spaces's variables for next enemy a* check
-	for (unsigned short i = 0; i < boardHeight; ++i) {
-		for (unsigned short j = 0; j < boardLength; ++j) {
+	for (unsigned short i = 0; i < rows; ++i) {
+		for (unsigned short j = 0; j < columns; ++j) {
 			if (board[i][j]->type == "Space") {
 				board[i][j]->parent = nullptr;
 				board[i][j]->moveCost = 0;
@@ -254,12 +298,12 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 		vector<Characters*> spotsToCheck;
 
 		//look in 4 directions around the character for spaces that it can check
-		if ((current->xPos + 1 <= boardHeight - 1) &&
+		if ((current->xPos + 1 <= rows - 1) &&
 			((board[current->xPos + 1][current->yPos]->type == "Space") || (board[current->xPos + 1][current->yPos]->type == "Player")))
 		{
 			spotsToCheck.push_back(board[current->xPos + 1][current->yPos]);
 		}
-		if ((current->yPos + 1 <= boardLength - 1) &&
+		if ((current->yPos + 1 <= columns - 1) &&
 			((board[current->xPos][current->yPos + 1]->type == "Space") || (board[current->xPos][current->yPos + 1]->type == "Player")))
 		{
 			spotsToCheck.push_back(board[current->xPos][current->yPos + 1]);
@@ -331,15 +375,4 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 		//then we move our enemy to that position
 		updateBoard(current->xPos, current->yPos, enemyToMove);
 	}
-
-	//clearing memory 
-	goal = nullptr;
-	start = nullptr;
-	current = nullptr;
-	lowestCostSpace = nullptr;
-
-	delete goal;
-	delete start;
-	delete current;
-	delete lowestCostSpace;
 }

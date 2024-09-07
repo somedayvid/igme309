@@ -13,6 +13,5 @@ public:
 	Characters();
 	void updatePosition(int x, int y);
 	~Characters();
-
 };
 

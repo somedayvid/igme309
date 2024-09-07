@@ -6,6 +6,7 @@
 #define _CRTDBG_MAP_ALLOC
 #include <cstdlib>
 #include <crtdbg.h>
+#include <stdlib.h>
 
 #include "Board.h"
 
@@ -13,6 +14,8 @@ using namespace std;
 
 void wrapper() {
 	srand(time(NULL));
+
+	int level = 1;
 
 	cout << "Welcome to Mini-Rogue!" << endl << endl;
 	cout << "The game will present you with the current state of the board and then you can input: " << endl;
@@ -23,24 +26,34 @@ void wrapper() {
 	cout << "In addition enemies move immediately after you do so plan ahead accordingly!" << endl << endl; 
 	
 
-	Board* gameBoard = new Board(10, 10);
+	Board* gameBoard = new Board(level);
 
-	cout << "Level: " << gameBoard->level << endl;
+	cout << "Level: " << level << endl;
 
 	while (gameBoard->isPlayerAlive()) {
 		gameBoard->displayBoard();
 		gameBoard->movePlayer();
+		if (gameBoard->allEnemiesDead) {
+			delete gameBoard;
+			gameBoard = nullptr;
+
+			++level;
+			gameBoard = new Board(level);
+			cout << endl << endl;
+			cout << "Level: " << level << endl;
+		}
 	}
 	gameBoard->displayBoard();
 	cout << "\033[1;32mYOU HAVE DIED! GAME OVER\033[1;0m" << endl;
+	cout << "\033[1;32mYOU MADE IT TO ROOM " << level << "!" << "\033[1; 0m" << endl;
 
-	gameBoard = nullptr;
 	delete gameBoard;
+	gameBoard = nullptr;
 }
 
 int main()
 {
 	wrapper();
-	//_CrtDumpMemoryLeaks();
+	_CrtDumpMemoryLeaks();
 }
 

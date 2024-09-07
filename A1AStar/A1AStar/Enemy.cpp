@@ -8,5 +8,4 @@ Enemy::Enemy(int x, int y) {
 
 Enemy::~Enemy()
 {
-
 }

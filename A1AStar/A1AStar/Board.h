@@ -22,18 +22,24 @@ using namespace std;
 class Board
 {
 private:
-	unsigned short boardLength;
-	unsigned short boardHeight;
+	unsigned short rows;
+	unsigned short columns;
+	unsigned short rowMax;
+	unsigned short columnMax;
+
+	int maxEnemies;
+
 	vector<vector<Characters*>> board;
 	vector<Characters*> holdingSpot;
 	vector<Characters*> tempEnemies;
 	vector<Enemy*> listOfEnemies;
 	Player* playerPtr;
 	bool alive;
+	int enemiesToSpawn;
 public:
-	int level;
-	Board();
-	Board(int length, int height);
+	bool allEnemiesDead;
+	Board(int level);
+	Board(int length, int height, int level);
 	~Board();
 
 	void movePlayer();

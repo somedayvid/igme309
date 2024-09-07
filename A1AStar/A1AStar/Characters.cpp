@@ -8,14 +8,14 @@ Characters::Characters()
 	parent = nullptr;
 }
 
+Characters::~Characters() {
+	/*delete parent;
+	parent = nullptr;*/
+}
+
 void Characters::updatePosition(int x, int y)
 {
 	xPos = x;
 	yPos = y;
 }
 
-Characters::~Characters()
-{
-	parent = nullptr;
-	delete parent;
-}
