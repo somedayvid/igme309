@@ -12,7 +12,6 @@ public:
 	vector<Characters*> openList;
 
 	Enemy(int x, int y);
-	~Enemy();
 };
 
 

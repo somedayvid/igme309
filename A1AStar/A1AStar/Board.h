@@ -39,7 +39,6 @@ private:
 public:
 	bool allEnemiesDead;
 	Board(int level);
-	Board(int length, int height, int level);
 	~Board();
 
 	void movePlayer();

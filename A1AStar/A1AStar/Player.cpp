@@ -7,7 +7,3 @@ Player::Player(int x, int y)
 	type = "Player";
 	hCost = 0;
 }
-
-Player::~Player()
-{
-}

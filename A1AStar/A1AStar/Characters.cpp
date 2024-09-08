@@ -1,4 +1,6 @@
 #include "Characters.h"
+#include <crtdbg.h>
+#include <stdlib.h>
 
 Characters::Characters()
 {
@@ -6,11 +8,7 @@ Characters::Characters()
 	yPos = 0;
 	moveCost = 0;
 	parent = nullptr;
-}
-
-Characters::~Characters() {
-	/*delete parent;
-	parent = nullptr;*/
+	hCost = 0;
 }
 
 void Characters::updatePosition(int x, int y)

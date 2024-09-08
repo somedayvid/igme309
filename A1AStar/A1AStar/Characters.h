@@ -1,5 +1,7 @@
 #pragma once
 #include <string>
+#include <crtdbg.h>
+#include <stdlib.h>
 class Characters
 {
 public:
@@ -12,6 +14,5 @@ public:
 
 	Characters();
 	void updatePosition(int x, int y);
-	~Characters();
 };
 

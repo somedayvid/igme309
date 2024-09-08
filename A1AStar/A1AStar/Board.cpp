@@ -7,6 +7,9 @@ Y is considered the left to right coordinate
 #include "Board.h"
 
 #include <algorithm>
+#define _CRTDBG_MAP_ALLOC
+#include <crtdbg.h>
+#include <stdlib.h>
 
 /// <summary>
 /// Parameterized constructor which generates a board of a random legnth and width that is greater than 10 x 10 
@@ -36,34 +39,14 @@ Board::Board(int level)
 	populateBoard();
 }
 
-//FOR TESTING ONLY
-/// <summary>
-/// Parameterized constructor which generates a board of the specified length and height
-/// </summary>
-/// <param name="length">How mamy tiles the board is from left to right</param>
-/// <param name="height">How many tiles the board is from top to bottom</param>
-Board::Board(int height, int length, int level)
-{
-	rows = height;
-	columns = length;
-	allEnemiesDead = false;
-
-	enemiesToSpawn = level;
-	alive = true;
-
-	for (int i = 0; i < rows; ++i) {
-		vector<Characters*> thing;
-		board.push_back(thing);
-	}
-
-	populateBoard();
-}
-
 /// <summary>
 /// Deconstructor for board
 /// </summary>
 Board::~Board()
 {
+	for (Enemy* enemy : listOfEnemies) {
+		enemy = nullptr;
+	}
 	for (unsigned short i = 0; i < rows; ++i) {
 		for (unsigned short j = 0; j < columns; ++j) {
 			delete board[i][j];
@@ -98,6 +81,7 @@ void Board::movePlayer()
 			break;
 		case 'l':
 			alive = false;
+			break;
 	}
 	//xmove and ymove are the coordinates of the position the player is trying to move to
 	xMove += playerPtr->xPos;
@@ -133,9 +117,6 @@ void Board::updateBoard(int x, int y, Characters* characterToMove)
 			holdingSpot.push_back(board[characterToMove->xPos][characterToMove->yPos]);
 			holdingSpot.push_back(board[x][y]);
 
-			board[characterToMove->xPos][characterToMove->yPos] = nullptr;
-			board[x][y] = nullptr;
-
 			board[characterToMove->xPos][characterToMove->yPos] = holdingSpot[1];
 			board[x][y] = holdingSpot[0];
 
@@ -145,6 +126,7 @@ void Board::updateBoard(int x, int y, Characters* characterToMove)
 			holdingSpot.clear();
 		}
 		//enemies ignore other enemies in their astar algorithm so they are not capable of triggering this piece of code
+		//if player moves towards enemy directly next to it the enemy will die 
 		else if (board[x][y]->type == "Enemy") {
 			holdingSpot.push_back(board[x][y]);
 			listOfEnemies.erase(find(listOfEnemies.begin(), listOfEnemies.end(), board[x][y]));
@@ -220,6 +202,7 @@ void Board::populateBoard()
 					spawnChanceModWall++;
 					spawnChanceModEnemy++;
 				}
+				//trying to spawn enemies more in the center of the board than the start
 				else if (enemiesToSpawn != 0 && rand() % 1000 >= 1050 - spawnChanceModEnemy) {
 					Enemy* newEnemy = new Enemy(i, j);
 					listOfEnemies.push_back(newEnemy);
@@ -273,26 +256,12 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 
 	bool canKillPlayer = false;
 	bool canMove = true;
-	
-	//clears the variables of the enemy for a new search
-	enemyToMove->openList.clear();
-	enemyToMove->closedList.clear();
 
 	//adds itself to the closedlist
 	enemyToMove->closedList.push_back(enemyToMove);
 
 	//clears the parent of the goal so player can be added to openlist and detected
 	goal->parent = nullptr;
-
-	//clears the spaces's variables for next enemy a* check
-	for (unsigned short i = 0; i < rows; ++i) {
-		for (unsigned short j = 0; j < columns; ++j) {
-			if (board[i][j]->type == "Space") {
-				board[i][j]->parent = nullptr;
-				board[i][j]->moveCost = 0;
-			}
-		}
-	}
 
 	while (current != goal) {
 		vector<Characters*> spotsToCheck;
@@ -369,6 +338,12 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 
 		//and we continue the while loop with our new current character being the one with the lowest move cost
 		current = lowestCostSpace;
+
+		for (Characters* spots : spotsToCheck) {
+			spots = nullptr;
+		}
+
+		spotsToCheck.clear();
 	}
 	
 	if (!canKillPlayer && canMove) {
@@ -381,4 +356,30 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 		//then we move our enemy to that position
 		updateBoard(current->xPos, current->yPos, enemyToMove);
 	}
+
+	//clears everything for a new search next time
+	for (Characters* item : enemyToMove->closedList) {
+		item = nullptr;
+	}
+	for (Characters* item : enemyToMove->openList) {
+		item = nullptr;
+	}
+	enemyToMove->closedList.clear();
+	enemyToMove->openList.clear();
+
+
+	//clears the spaces's variables for next enemy a* check
+	for (unsigned short i = 0; i < rows; ++i) {
+		for (unsigned short j = 0; j < columns; ++j) {
+			if (board[i][j]->type == "Space") {
+				board[i][j]->parent = nullptr;
+				board[i][j]->moveCost = 0;
+			}
+		}
+	}
+
+	goal = nullptr;
+	start = nullptr;
+	current = nullptr;
+	lowestCostSpace = nullptr;
 }

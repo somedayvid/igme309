@@ -5,7 +5,3 @@ Enemy::Enemy(int x, int y) {
 	yPos = y;
 	type = "Enemy";
 }
-
-Enemy::~Enemy()
-{
-}
