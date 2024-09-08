@@ -3,9 +3,6 @@ inherit from it, consider it sort like how unity considers gameObjects for all o
 
 X is considered the top to bottom coordinate 
 Y is considered the left to right coordinate
-
-//TODO look into bug where enemy moves back and forth in dead end
-//TODO make an escape case for when the enemy cannot actually find a way to the player
 */
 #include "Board.h"
 
@@ -19,8 +16,8 @@ Board::Board(int level)
 	columnMax = 40;
 	rowMax = 25;
 
-	columns = rand() % 15 + 10 + level;
-	rows = rand() % 15 + 10 + level;
+	columns = rand() % 5 + 10 + level;
+	rows = rand() % 5 + 10 + level;
 	allEnemiesDead = false;
 
 	//could not find clamp??? ;-;
@@ -198,31 +195,37 @@ void Board::populateBoard()
 {
 	bool isPlayerSpawned = false;
 
-	//int playerToSpawnX = rand() % boardHeight;
-	//int playerToSpawnY = rand() % boardLength;
+	int playerToSpawnX = rand() % rows;
+	int playerToSpawnY = rand() % columns;
 
 	int spawnChanceModEnemy = 1;
 	int spawnChanceModWall = 1;
 
 	for (unsigned short i = 0; i < rows; ++i) {
 		for (unsigned short j = 0; j < columns; ++j) {
-			if ((i == rows - enemiesToSpawn - 1) && enemiesToSpawn >= maxEnemies - enemiesToSpawn ) {
+			if (i == playerToSpawnX && j == playerToSpawnY) {
+				Player* player = new Player(i, j);
+				playerPtr = player;
+				board[i].push_back(playerPtr);
+			}
+			else if((i == rows - enemiesToSpawn - 1) && enemiesToSpawn >= maxEnemies - enemiesToSpawn ) {
 				Enemy* newEnemy = new Enemy(i, j);
 				listOfEnemies.push_back(newEnemy);
 				board[i].push_back(newEnemy);
 				enemiesToSpawn--;
 			}
 			else {
-				if (rand() % 1000 >= 800 + spawnChanceModWall + maxEnemies * 10) {
+				if (rand() % 1000 >= 850 + spawnChanceModWall + maxEnemies * 10) {
 					board[i].push_back(new Wall(i, j));
 					spawnChanceModWall++;
 					spawnChanceModEnemy++;
 				}
-				else if (enemiesToSpawn != 0 && rand() % 1000 >= 925 - spawnChanceModEnemy) {
+				else if (enemiesToSpawn != 0 && rand() % 1000 >= 1050 - spawnChanceModEnemy) {
 					Enemy* newEnemy = new Enemy(i, j);
 					listOfEnemies.push_back(newEnemy);
 					board[i].push_back(newEnemy);
 					enemiesToSpawn--;
+					spawnChanceModEnemy -= columns;
 				}
 				else {
 					board[i].push_back(new Space(i, j));
@@ -231,10 +234,6 @@ void Board::populateBoard()
 			}
 		}
 	}
-
-	Player* player = new Player(3,3);
-	playerPtr = player;
-	board[playerPtr->xPos][playerPtr->yPos] = playerPtr;
 	assignCosts();
 }
 
@@ -273,6 +272,7 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 	Characters* lowestCostSpace = nullptr;
 
 	bool canKillPlayer = false;
+	bool canMove = true;
 	
 	//clears the variables of the enemy for a new search
 	enemyToMove->openList.clear();
@@ -315,37 +315,43 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 
 		}
 		if ((current->yPos - 1 >= 0) &&
-			((board[current->xPos][current->yPos - 1]->type == "Space") || (board[current->xPos][current->yPos - 1]->type == "Space")))
+			((board[current->xPos][current->yPos - 1]->type == "Space") || (board[current->xPos][current->yPos - 1]->type == "Player")))
 		{
 			spotsToCheck.push_back(board[current->xPos][current->yPos - 1]);	
 
 		}
 
+		//checks if the goal is within the killable range of the enemy 
 		if (current == start && find(spotsToCheck.begin(), spotsToCheck.end(), goal) != spotsToCheck.end()) {
 			canKillPlayer = true;
 			alive = false;
 			break;
 		}
 
-		if (spotsToCheck.size() == 0) {
-			break;
-		}
-
-		//of the possible spaces it could check if they do not have a parent and are not on the openlist
-		for (Characters* spots : spotsToCheck) {
-			if (spots->parent == nullptr && find(enemyToMove->openList.begin(), enemyToMove->openList.end(), spots) == enemyToMove->openList.end()) {
-				enemyToMove->openList.push_back(spots);				//we add them to the open list
-				spots->parent = current;							//and parent it to the current character we are on
-				spots->moveCost = spots->hCost + current->moveCost; //and then adjust the movecost according to the total cost to move from the start to this character
-			}
-			//if they do have a parent or are on the openlist then we go to the else and compare if the movecost coming from our current character
-			//would be lower than the one it currently has, if yes then we update its parent and move cost
-			else {
-				if (spots->moveCost > spots->hCost + current->moveCost) {
-					spots->parent = current;
-					spots->moveCost = spots->hCost + current->moveCost;
+		//if there are no possible spots to check anyways then we skip it
+		if (spotsToCheck.size() != 0) {
+			//of the possible spaces it could check if they do not have a parent and are not on the openlist
+			for (Characters* spots : spotsToCheck) {
+				if (spots->parent == nullptr && find(enemyToMove->openList.begin(), enemyToMove->openList.end(), spots) == enemyToMove->openList.end()) {
+					enemyToMove->openList.push_back(spots);				//we add them to the open list
+					spots->parent = current;							//and parent it to the current character we are on
+					spots->moveCost = spots->hCost + current->moveCost; //and then adjust the movecost according to the total cost to move from the start to this character
+				}
+				//if they do have a parent or are on the openlist then we go to the else and compare if the movecost coming from our current character
+				//would be lower than the one it currently has, if yes then we update its parent and move cost
+				else {
+					if (spots->moveCost > spots->hCost + current->moveCost) {
+						spots->parent = current;
+						spots->moveCost = spots->hCost + current->moveCost;
+					}
 				}
 			}
+		}
+
+		//checks if the enemy reaches a point where it cannot find the goal bc of walls / other enemies in the way
+		if (enemyToMove->openList.size() == 0) {
+			canMove = false;
+			break;
 		}
 
 		//comparing the movecosts of all the characters in our current open list to find the one with the loweset movecost value
@@ -364,8 +370,8 @@ void Board::aStarSearch(Enemy* enemyToMove) {
 		//and we continue the while loop with our new current character being the one with the lowest move cost
 		current = lowestCostSpace;
 	}
-
-	if (!canKillPlayer) {
+	
+	if (!canKillPlayer && canMove) {
 		//once the path is established the while loop exits and we trace our way back to a character
 		//which has our start as its parent 
 		while (current->parent != start) {
