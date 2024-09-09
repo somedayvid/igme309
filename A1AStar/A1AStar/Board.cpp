@@ -76,9 +76,6 @@ void Board::movePlayer()
 		case 'd':
 			yMove = 1;
 			break;
-		case 'l':
-			alive = false;
-			break;
 	}
 	//xmove and ymove are the coordinates of the position the player is trying to move to
 	xMove += playerPtr->xPos;
