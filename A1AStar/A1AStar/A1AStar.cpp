@@ -1,12 +1,9 @@
-// A1AStar.cpp : This file contains the 'main' function. Program execution begins and ends there.
+// A1AStar.cpp : This file contains the 'main' function. Program execution begins and ends here.
 //
 
 #include <iostream>
 #include <random>
 #include <cstdlib>
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#include <stdlib.h>
 
 #include "Board.h"
 
@@ -54,6 +51,5 @@ void wrapper() {
 int main()
 {
 	wrapper();
-	_CrtDumpMemoryLeaks();
 }
 

@@ -1,7 +1,5 @@
 #pragma once
 #include <string>
-#include <crtdbg.h>
-#include <stdlib.h>
 class Characters
 {
 public:

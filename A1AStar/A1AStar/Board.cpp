@@ -7,9 +7,6 @@ Y is considered the left to right coordinate
 #include "Board.h"
 
 #include <algorithm>
-#define _CRTDBG_MAP_ALLOC
-#include <crtdbg.h>
-#include <stdlib.h>
 
 /// <summary>
 /// Parameterized constructor which generates a board of a random legnth and width that is greater than 10 x 10 

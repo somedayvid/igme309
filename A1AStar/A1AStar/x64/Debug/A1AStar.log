@@ -1,10 +1,5 @@
 ﻿  A1AStar.cpp
-C:\Users\david\Documents\GitHub\igme309\A1AStar\A1AStar\A1AStar.cpp(16,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\david\Documents\GitHub\igme309\A1AStar\A1AStar\A1AStar.cpp(13,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
   Board.cpp
-  Characters.cpp
-  Enemy.cpp
-  Player.cpp
-  Space.cpp
-  Wall.cpp
   Generating Code...
   A1AStar.vcxproj -> C:\Users\david\Documents\GitHub\igme309\A1AStar\x64\Debug\A1AStar.exe
