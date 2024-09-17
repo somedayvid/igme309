@@ -55,7 +55,7 @@ void functionFour() {
     r = &p;
     a = 5;
     q = &b;
-    //***r = *p - 6; I GET AN ERROR WHEN I TRY TO RUN THIS
+    **r = *p - 6; 
     cout << a << b << *p << *q << **r << ***s << endl;
 }
 
