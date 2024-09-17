@@ -8,7 +8,8 @@ class Stack
 {
 private:
 	int size;
-	Node* head;
+	Node<T>* head;
+	Node<T>* tail;
 public:
 	Stack();
 	//rule of three
@@ -54,9 +55,16 @@ inline Stack<T>::~Stack()
 template<typename T>
 inline void Stack<T>::Push(T item)
 {
+	Node<T>* newNode = new Node<T>(item);
 	if (head == NULL) {
-
+		head = newNode;
+		tail = newNode;
 	}
+	else {
+		tail->next = newNode;
+		tail = newNode;
+	}
+	size++;
 }
 
 /// <summary>
@@ -66,8 +74,15 @@ inline void Stack<T>::Push(T item)
 template<typename T>
 inline void Stack<T>::Pop()
 {
-	heapArray[size - 1] = NULL;
-	--size;
+	Node<T>* current = head;
+	for (int i = 0; i < size - 2; ++i) {
+		current = current.next;
+	}
+	
+	delete current.next;
+	current.next = nullptr;
+	current.next = NULL;
+	size--;
 }
 
 /// <summary>
@@ -82,7 +97,7 @@ inline T& Stack<T>::Top()
 		throw std::invalid_argument("Stack is empty!");
 	}
 	else {
-		return heapArray[size - 1];
+		return tail->item;
 	}
 }
 
@@ -93,15 +108,12 @@ inline T& Stack<T>::Top()
 template<typename T>
 inline void Stack<T>::Print()
 {
-	for (unsigned short i = 0; i < size; ++i) {
-		if (i + 1 == size) {
-			std::cout << *(heapArray + i);
-		}
-		else {
-			std::cout << *(heapArray + i) << ", ";
-		}
+	Node<T>* current = head;
+	while (current->next != NULL) {
+		std::cout << current->item << ", ";
+		current = current->next;
 	}
-	std::cout << std::endl;
+	std::cout << current->item << std::endl;
 }
 
 /// <summary>
