@@ -180,6 +180,7 @@ inline void Stack<T>::Print()
 	std::cout << std::endl;
 }
 
+
 /// <summary>
 /// Simply returns internally recorded size; number of elements in stack
 /// </summary>
