@@ -29,6 +29,8 @@ inline Queue<T>::Queue()
 template<class T>
 inline Queue<T>::~Queue()
 {
+	delete[] heapArray;
+	heapArray = nullptr;
 }
 
 template<class T>
