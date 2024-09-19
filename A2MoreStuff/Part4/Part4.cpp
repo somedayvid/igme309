@@ -10,13 +10,16 @@ int main()
 {
 	Queue<int>* intQueue = new Queue<int>();
 
+	intQueue->dequeue();
 	intQueue->enqueue(2);
-	intQueue->print();
+	//intQueue->print();
 	intQueue->enqueue(3);
 	intQueue->enqueue(5);
-	intQueue->print();
+	//intQueue->print();
 	cout << intQueue->peek() << endl;
 	cout << intQueue->rear() << endl;
 	intQueue->dequeue();
+	intQueue->print();
+	intQueue->enqueue(11);
 	intQueue->print();
 }

@@ -13,8 +13,6 @@ public:
 	void dequeue();
 	T peek();
 	T rear();
-	bool isEmpty();
-	bool isFull();
 	void print();
 };
 
@@ -33,6 +31,11 @@ inline Queue<T>::~Queue()
 	heapArray = nullptr;
 }
 
+/// <summary>
+/// Adds a the parameter to the queue
+/// </summary>
+/// <typeparam name="T">Template generic type</typeparam>
+/// <param name="item">Item to be added</param>
 template<class T>
 inline void Queue<T>::enqueue(T item)
 {
@@ -69,58 +72,62 @@ inline void Queue<T>::enqueue(T item)
 	}
 }
 
+/// <summary>
+/// Removes the element that was added to the queue the longest ago
+/// </summary>
+/// <typeparam name="T">Template generic type</typeparam>
 template<class T>
 inline void Queue<T>::dequeue()
 {
 	if (size == 0) {
-		throw std::invalid_argument("Queue is empty!");
+		std::cout << ("Queue is empty!") << std::endl;
 	}
 	else {
-		heapArray[size - 1] = NULL;
+		heapArray[0] = NULL;
 		--size;
+		for (int i = 0; i < size; ++i) {
+			heapArray[i] = heapArray[i + 1];
+		}
+		heapArray[size] = NULL;
 	}
 }
 
+/// <summary>
+/// Returns the first element in the queue; the next to be dequeued if called
+/// </summary>
+/// <typeparam name="T">Template generic type</typeparam>
+/// <returns>The first element in the queue</returns>
 template<class T>
 inline T Queue<T>::peek()
 {
 	if (size == 0) {
-		throw std::invalid_argument("Queue is empty!");
+		std::cout << ("Queue is empty!") << std::endl;
 	}
 	else {
 		return *(heapArray);
 	}
 }
 
+/// <summary>
+/// Returns the last element in the queue; the most recently added element
+/// </summary>
+/// <typeparam name="T">Template type</typeparam>
+/// <returns><The last element in the queue/returns>
 template<class T>
 inline T Queue<T>::rear()
 {
 	if (size == 0) {
-		throw std::invalid_argument("Queue is empty!");
+		std::cout << ("Queue is empty!") << std::endl;
 	}
 	else {
 		return *(heapArray + size - 1);
 	}
 }
 
-template<class T>
-inline bool Queue<T>::isEmpty()
-{
-	if (size == 0) {
-		return true;
-	}
-	else { return false; }
-}
-
-template<class T>
-inline bool Queue<T>::isFull()
-{
-	if (size == capacity) {
-		return true;
-	}
-	else { return false; }
-}
-
+/// <summary>
+/// Prints out all the elements in the queue starting from the one added the longest ago
+/// </summary>
+/// <typeparam name="T">Template generic type</typeparam>
 template<class T>
 inline void Queue<T>::print()
 {
