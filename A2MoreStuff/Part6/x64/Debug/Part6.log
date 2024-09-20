@@ -1,0 +1,4 @@
+﻿  Part6.cpp
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Part6.cpp(8,1): warning C4326: return type of 'main' should be 'int' instead of 'float'
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Vector.h(96): warning C4715: 'Vector<float>::operator+': not all control paths return a value
+  Part6.vcxproj -> C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\x64\Debug\Part6.exe
