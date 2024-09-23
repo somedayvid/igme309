@@ -1,6 +1,8 @@
 #pragma once
 #include <array>
 #include <cmath>
+#include "Vector.h"
+
 template <class T>
 class Matrix
 {
@@ -19,13 +21,15 @@ public:
 	Matrix& operator+(const Matrix& other);
 	Matrix& operator-(const Matrix& other);
 	Matrix& operator*(const Matrix& other);
-	//Assignment operators	 
-	Matrix& operator+=(const Matrix& other);
-	Matrix& operator-=(const Matrix& other);
-	Matrix& operator*=(const Matrix& other);
+
+	//Assignment operator
 	Matrix& operator=(const Matrix& other);
 
 	void scale(T scalar);
+	void transpose();
+	double determinant();
+	double determinant(T incomingArray[], const int incomingRows, const int incomingColumns);
+//	void multiplyByVector(const Vector& other);
 
 	void print();
 };
@@ -35,6 +39,7 @@ inline Matrix<T>::Matrix(T myElements[], int numRows, int numElements)
 {
 	heapArray = myElements;
 	rows = numRows;
+	
 
 	columns = numElements/ rows;	
 
@@ -48,6 +53,11 @@ inline Matrix<T>::~Matrix()
 	heapArray = nullptr;
 }
 
+/// <summary>
+/// Copy constructor to create a copy of another matrix
+/// </summary>
+/// <typeparam name="T">Generic Template Class</typeparam>
+/// <param name="other">Other matrix to be copied from</param>
 template<class T>
 inline Matrix<T>::Matrix(const Matrix& other)
 {
@@ -63,11 +73,11 @@ inline Matrix<T>::Matrix(const Matrix& other)
 }
 
 /// <summary>
-/// 
+/// Addition operator to add two matrices together
 /// </summary>
-/// <typeparam name="T"></typeparam>
-/// <param name="other"></param>
-/// <returns></returns>
+/// <typeparam name="T">Generic Template Class</typeparam>
+/// <param name="other">Other matrix to add to this one</param>
+/// <returns>Deref to new matrix with combined stats</returns>
 template<class T>
 inline Matrix<T>& Matrix<T>::operator+(const Matrix& other)
 {
@@ -85,6 +95,12 @@ inline Matrix<T>& Matrix<T>::operator+(const Matrix& other)
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="other"></param>
+/// <returns></returns>
 template<class T>
 inline Matrix<T>& Matrix<T>::operator-(const Matrix& other)
 {
@@ -102,6 +118,12 @@ inline Matrix<T>& Matrix<T>::operator-(const Matrix& other)
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="other"></param>
+/// <returns></returns>
 template<class T>
 inline Matrix<T>& Matrix<T>::operator*(const Matrix& other)
 {
@@ -125,37 +147,48 @@ inline Matrix<T>& Matrix<T>::operator*(const Matrix& other)
 				}
 				tempDotProduct += heapArray[x] * other.heapArray[y];
 			}
-			std::cout << tempDotProduct << " ";
 		}
 		Matrix<T>* newMatrix = new Matrix<T>(newArray, rows, size);
 		return *newMatrix;
 	}
 }
 
-template<class T>
-inline Matrix<T>& Matrix<T>::operator+=(const Matrix& other)
-{
-	// TODO: insert return statement here
-}
-
-template<class T>
-inline Matrix<T>& Matrix<T>::operator-=(const Matrix& other)
-{
-	// TODO: insert return statement here
-}
-
-template<class T>
-inline Matrix<T>& Matrix<T>::operator*=(const Matrix& other)
-{
-	// TODO: insert return statement here
-}
-
+/// <summary>
+/// Sets this matrix's values equal to the other
+/// </summary>
+/// <typeparam name="T">Generic Template Class</typeparam>
+/// <param name="other">The other matrix to be copied over this one</param>
+/// <returns>This matrix but with its new values</returns>
 template<class T>
 inline Matrix<T>& Matrix<T>::operator=(const Matrix& other)
 {
-	// TODO: insert return statement here
+	if (this == &other) {
+		return *this;
+	}
+
+	if (heapArray != nullptr) {
+		delete[] heapArray;
+		heapArray = nullptr;
+	}
+
+	size = other.size;
+	rows = other.rows;
+	columns = other.columns;
+
+	heapArray = new T[size];
+
+	//adding all the elements in the original array to the new one
+	for (unsigned short i = 0; i < size; ++i) {
+		heapArray[i] = other.heapArray[i];
+	}
+	return *this;
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="scalar"></param>
 template<class T>
 inline void Matrix<T>::scale(T scalar)
 {
@@ -164,12 +197,115 @@ inline void Matrix<T>::scale(T scalar)
 	}
 }
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T"></typeparam>
+template<class T>
+inline void Matrix<T>::transpose()
+{
+	T* newArray = new T[size];
+
+	for (int i = 0; i < rows; ++i) {
+		for (int j = 0; j < columns; ++j) {
+			int x = i * columns + j;
+			int y = j * rows + i;
+			newArray[x] = heapArray[y];
+		}
+	}
+
+	for (int i = 0; i < rows * columns; i++) {
+		heapArray[i] = newArray[i];
+	}
+
+	rows += columns;
+	columns -= rows;
+	rows += columns;
+	columns *= -1;
+
+	delete[] newArray;
+	newArray = nullptr;
+}
+
+template<class T>
+inline double Matrix<T>::determinant()
+{
+	return determinant(heapArray, rows, columns);
+}
+
+/// <summary>
+/// Calculates and returns the determinant of this matrix
+/// </summary>
+/// <typeparam name="T">Generic Template Type</typeparam>
+/// <param name="incomingArray">The array of matrix numbers</param>
+/// <param name="incomingRows">The number of rows in the matrix</param>
+/// <param name="incomingColumns">The number of columns in the matrix</param>
+/// <returns>A double representing the determinant</returns>
+template<class T>
+inline double Matrix<T>::determinant(T incomingArray[], const int incomingRows, const int incomingColumns)
+{
+	double determinantTotal = 0;
+
+	T* newArray = incomingArray;
+	int newRows = incomingRows;
+	int newColumns = incomingColumns;
+	int newSize = newRows * newColumns;
+
+	if (newRows == newColumns) {
+		if(newRows == 2)
+		{
+			return newArray[0] * newArray[3] - newArray[1] * newArray[2];
+		}
+		else {
+			for (int i = 0; i < newColumns; ++i) {
+				int tempArraySize = (newColumns - 1) * (newRows - 1);
+				T* tempArray = new T[tempArraySize]{ NULL };
+				for (int k = newColumns; k < newSize; ++k) {
+					if (k % (newColumns + i) != 0) {
+						for (int l = 0; l < tempArraySize; ++l) {
+							if (tempArray[l] == NULL) {
+								tempArray[l] = newArray[k];
+								break;
+							}
+						}
+					}
+				}
+				if (i % 2 != 0) {
+					determinantTotal -= newArray[i] * determinant(tempArray, newRows - 1, newColumns - 1);
+				}
+				else {
+					determinantTotal += newArray[i] * determinant(tempArray, newRows - 1, newColumns - 1);
+				}
+				delete[] tempArray;
+				tempArray = nullptr;
+			}
+			std::cout << determinantTotal << std::endl; 
+			return determinantTotal;
+		}
+	}
+	else {
+		throw std::invalid_argument("Must be a matrix of equal row and column size");
+	}
+}
+
+//template<class T>
+//inline void Matrix<T>::multiplyByVector(const Vector<T>& other)
+//{
+//	std::cout << other->getSize();
+//}
+
+/// <summary>
+/// Prints out all the contents in matrix form with rows and columns
+/// </summary>
+/// <typeparam name="T">Template Generic Type</typeparam>
 template<class T>
 inline void Matrix<T>::print()
 {
 	std::cout << "rows: " << rows << ", Columns: " << columns << std::endl;
 	for (int i = 0; i < rows * columns; ++i) {
-		if (i % rows == 0) { std::cout << std::endl; }
+		if (i % columns == 0) {
+			std::cout << std::endl;
+		}
 		std::cout << *(heapArray + i) << " ";
 	}
 }

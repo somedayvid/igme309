@@ -31,6 +31,7 @@ public:
 	float dot(const Vector& other);
 	Vector& cross(const Vector& other);
 	void addDimension(T z);
+	int getSize();
 	void print();
 };
 
@@ -311,6 +312,17 @@ inline void Vector<T>::addDimension(T z)
 {
 	this->z = z;
 	dimension = 3;
+}
+
+/// <summary>
+/// Public function for other classes to receive size 
+/// </summary>
+/// <typeparam name="T">Generic Template Class</typeparam>
+/// <returns>Dimensionality of current vector</returns>
+template<class T>
+inline int Vector<T>::getSize()
+{
+	return dimension;
 }
 
 /// <summary>

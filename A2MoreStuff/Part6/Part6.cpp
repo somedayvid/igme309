@@ -30,16 +30,22 @@ float main()
 	////whatVector->addDimension(20);
 	////whatVector->print();
 
-	float myaayy[] = { 1,2,3,
-					 4,5,6};
-
-	float array2[] = { 7,8,9,10,11,12};
-
 	//std::cout << sizeof(myaayy);
 
-	Matrix<float>* myMatrix = new Matrix<float>(myaayy, 2,6);
-	Matrix<float>* matrix2 = new Matrix<float>(array2, 3, 6);
-	
-	myMatrix->operator*(*matrix2);
+	Matrix<float>* myMatrix = new Matrix<float>(new float[9]{6,1,1,4,-2,5,2,8,7}, 3, 9);
+	std::cout << myMatrix->determinant();
+	//Matrix<float>* matrix2 = new Matrix<float>(new float[6]{7,8,9,10,11,12}, 3, 6);
+
+	//myMatrix->multiplyByVector(myVect);
+	//myMatrix->operator=(myMatrix->operator*(*matrix2));
+	//myMatrix->print();
+	//myMatrix->transpose();
+	//myMatrix->print();
+	//myMatrix->transpose();
+	//myMatrix->print();
+
+	//Matrix<float>* newMatrix = new Matrix<float>(new float[4] {1,2,3,4}, 2, 4);
+	//cout << newMatrix->determinant();
+
 
 }
