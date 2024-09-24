@@ -1,3 +1,34 @@
 ﻿  Part6.cpp
 C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Part6.cpp(12,1): warning C4326: return type of 'main' should be 'int' instead of 'float'
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(274,103): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(246,1): message : while compiling class template member function 'double Matrix<float>::determinant(T [],const int,const int,int)'
+          with
+          [
+              T=float
+          ]
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(233,2): message : see reference to function template instantiation 'double Matrix<float>::determinant(T [],const int,const int,int)' being compiled
+          with
+          [
+              T=float
+          ]
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(39,1): message : while compiling class template member function 'Matrix<float>::Matrix(T [],int,int)'
+          with
+          [
+              T=float
+          ]
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Part6.cpp(35,26): message : see reference to function template instantiation 'Matrix<float>::Matrix(T [],int,int)' being compiled
+          with
+          [
+              T=float
+          ]
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Part6.cpp(35,45): message : see reference to class template instantiation 'Matrix<float>' being compiled
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(277,103): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
   Part6.vcxproj -> C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\x64\Debug\Part6.exe

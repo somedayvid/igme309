@@ -33,7 +33,7 @@ float main()
 	//std::cout << sizeof(myaayy);
 
 	Matrix<float>* myMatrix = new Matrix<float>(new float[9]{6,1,1,4,-2,5,2,8,7}, 3, 9);
-	std::cout << myMatrix->determinant();
+	cout << myMatrix->determinant();
 	//Matrix<float>* matrix2 = new Matrix<float>(new float[6]{7,8,9,10,11,12}, 3, 6);
 
 	//myMatrix->multiplyByVector(myVect);

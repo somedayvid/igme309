@@ -28,7 +28,7 @@ public:
 	void scale(T scalar);
 	void transpose();
 	double determinant();
-	double determinant(T incomingArray[], const int incomingRows, const int incomingColumns);
+	double determinant(T incomingArray[], const int incomingRows, const int incomingColumns, int multiplier = 1);
 //	void multiplyByVector(const Vector& other);
 
 	void print();
@@ -242,10 +242,9 @@ inline double Matrix<T>::determinant()
 /// <param name="incomingColumns">The number of columns in the matrix</param>
 /// <returns>A double representing the determinant</returns>
 template<class T>
-inline double Matrix<T>::determinant(T incomingArray[], const int incomingRows, const int incomingColumns)
+inline double Matrix<T>::determinant(T incomingArray[], const int incomingRows, const int incomingColumns, int multiplier)
 {
 	double determinantTotal = 0;
-
 	T* newArray = incomingArray;
 	int newRows = incomingRows;
 	int newColumns = incomingColumns;
@@ -261,7 +260,7 @@ inline double Matrix<T>::determinant(T incomingArray[], const int incomingRows, 
 				int tempArraySize = (newColumns - 1) * (newRows - 1);
 				T* tempArray = new T[tempArraySize]{ NULL };
 				for (int k = newColumns; k < newSize; ++k) {
-					if (k % (newColumns + i) != 0) {
+					if ((k - i) % newColumns != 0) {
 						for (int l = 0; l < tempArraySize; ++l) {
 							if (tempArray[l] == NULL) {
 								tempArray[l] = newArray[k];
@@ -270,16 +269,17 @@ inline double Matrix<T>::determinant(T incomingArray[], const int incomingRows, 
 						}
 					}
 				}
+
 				if (i % 2 != 0) {
-					determinantTotal -= newArray[i] * determinant(tempArray, newRows - 1, newColumns - 1);
+					determinantTotal -= (newArray[i] * determinant(tempArray, newRows - 1, newColumns - 1, newArray[i]));
 				}
 				else {
-					determinantTotal += newArray[i] * determinant(tempArray, newRows - 1, newColumns - 1);
+					determinantTotal += (newArray[i] * determinant(tempArray, newRows - 1, newColumns - 1, newArray[i]));
 				}
+
 				delete[] tempArray;
 				tempArray = nullptr;
 			}
-			std::cout << determinantTotal << std::endl; 
 			return determinantTotal;
 		}
 	}
