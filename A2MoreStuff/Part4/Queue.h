@@ -131,6 +131,9 @@ inline T Queue<T>::rear()
 template<class T>
 inline void Queue<T>::print()
 {
+	std::cout << "Queue has a capacity of: " << capacity << ": [";
+
+
 	for (unsigned short i = 0; i < size; ++i) {
 		if (i + 1 == size) {
 			std::cout << *(heapArray + i);
@@ -139,5 +142,6 @@ inline void Queue<T>::print()
 			std::cout << *(heapArray + i) << ", ";
 		}
 	}
-	std::cout << std::endl;
+
+	std::cout << "]" << std::endl;
 }

@@ -1,4 +1,4 @@
 ﻿  Part4.cpp
-C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part4\Queue.h(125): warning C4715: 'Queue<int>::rear': not all control paths return a value
 C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part4\Queue.h(109): warning C4715: 'Queue<int>::peek': not all control paths return a value
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part4\Queue.h(125): warning C4715: 'Queue<int>::rear': not all control paths return a value
   Part4.vcxproj -> C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part4\x64\Debug\Part4.exe
