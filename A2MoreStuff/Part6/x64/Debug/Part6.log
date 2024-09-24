@@ -1,21 +1,21 @@
 ﻿  Part6.cpp
 C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Part6.cpp(12,1): warning C4326: return type of 'main' should be 'int' instead of 'float'
-C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(274,103): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(275,103): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
           with
           [
               T=float
           ]
-C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(246,1): message : while compiling class template member function 'double Matrix<float>::determinant(T [],const int,const int,int)'
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(247,1): message : while compiling class template member function 'T Matrix<T>::determinant(T [],const int,const int,int)'
           with
           [
               T=float
           ]
-C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(233,2): message : see reference to function template instantiation 'double Matrix<float>::determinant(T [],const int,const int,int)' being compiled
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(297,16): message : see reference to function template instantiation 'T Matrix<T>::determinant(T [],const int,const int,int)' being compiled
           with
           [
               T=float
           ]
-C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(39,1): message : while compiling class template member function 'Matrix<float>::Matrix(T [],int,int)'
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(40,1): message : while compiling class template member function 'Matrix<float>::Matrix(T [],int,int)'
           with
           [
               T=float
@@ -26,7 +26,12 @@ C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Part6.cpp(35,26): mess
               T=float
           ]
 C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Part6.cpp(35,45): message : see reference to class template instantiation 'Matrix<float>' being compiled
-C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(277,103): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(278,103): warning C4244: 'argument': conversion from 'T' to 'int', possible loss of data
+          with
+          [
+              T=float
+          ]
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part6\Matrix.h(284,11): warning C4244: 'return': conversion from 'double' to 'T', possible loss of data
           with
           [
               T=float

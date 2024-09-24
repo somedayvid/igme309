@@ -32,14 +32,16 @@ float main()
 
 	//std::cout << sizeof(myaayy);
 
-	Matrix<float>* myMatrix = new Matrix<float>(new float[9]{6,1,1,4,-2,5,2,8,7}, 3, 9);
-	cout << myMatrix->determinant();
+	Matrix<float>* myMatrix = new Matrix<float>(new float[4]{4,7,2,6}, 2, 4);
+	//myMatrix->print();
 	//Matrix<float>* matrix2 = new Matrix<float>(new float[6]{7,8,9,10,11,12}, 3, 6);
 
 	//myMatrix->multiplyByVector(myVect);
 	//myMatrix->operator=(myMatrix->operator*(*matrix2));
-	//myMatrix->print();
+	myMatrix->print();
+	myMatrix->inverse();
 	//myMatrix->transpose();
+	myMatrix->print();
 	//myMatrix->print();
 	//myMatrix->transpose();
 	//myMatrix->print();

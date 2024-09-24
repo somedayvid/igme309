@@ -27,8 +27,9 @@ public:
 
 	void scale(T scalar);
 	void transpose();
-	double determinant();
-	double determinant(T incomingArray[], const int incomingRows, const int incomingColumns, int multiplier = 1);
+	T determinant();
+	T determinant(T incomingArray[], const int incomingRows, const int incomingColumns, int multiplier = 1);
+	void inverse();
 //	void multiplyByVector(const Vector& other);
 
 	void print();
@@ -228,7 +229,7 @@ inline void Matrix<T>::transpose()
 }
 
 template<class T>
-inline double Matrix<T>::determinant()
+inline T Matrix<T>::determinant()
 {
 	return determinant(heapArray, rows, columns);
 }
@@ -242,7 +243,7 @@ inline double Matrix<T>::determinant()
 /// <param name="incomingColumns">The number of columns in the matrix</param>
 /// <returns>A double representing the determinant</returns>
 template<class T>
-inline double Matrix<T>::determinant(T incomingArray[], const int incomingRows, const int incomingColumns, int multiplier)
+inline T Matrix<T>::determinant(T incomingArray[], const int incomingRows, const int incomingColumns, int multiplier)
 {
 	double determinantTotal = 0;
 	T* newArray = incomingArray;
@@ -286,6 +287,18 @@ inline double Matrix<T>::determinant(T incomingArray[], const int incomingRows, 
 	else {
 		throw std::invalid_argument("Must be a matrix of equal row and column size");
 	}
+}
+
+template<class T>
+inline void Matrix<T>::inverse()
+{
+	T* tempArray = new T[size]{ heapArray[3], -heapArray[1], -heapArray[2], heapArray[0] };
+	for (int i = 0; i < size; ++i) {
+		tempArray[i] /= determinant(heapArray, 2, 2);
+	}
+	delete[] heapArray;
+	heapArray = tempArray;
+	tempArray = nullptr;
 }
 
 //template<class T>
