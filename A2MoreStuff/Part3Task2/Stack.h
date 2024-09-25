@@ -20,7 +20,7 @@ public:
 	//methods
 	void Push(T item);
 	void Pop();
-	T& Top();
+	Node<T>* Top();
 	void Print();
 	int GetSize();
 	bool IsEmpty();
@@ -38,13 +38,97 @@ inline Stack<T>::Stack()
 }
 
 /// <summary>
+/// Copy constructor
+/// </summary>
+/// <typeparam name="T"></typeparam>
+/// <param name="other"></param>
+template<typename T>
+inline Stack<T>::Stack(const Stack& other)
+{
+	if (size > 0) {
+		Node<T>* current;
+		for (int i = 0; i < size; ++i) {
+			current = head->next;
+			delete head;
+			head = current;
+		}
+	}
+
+	size = other.size;
+
+	Node<T>* otherCurrent = other.head;
+	Node<T>* thisCurrent;
+
+	Node<T>* newHead = new Node<T>(*otherCurrent);
+	thisCurrent = newHead;
+	head = newHead;
+	tail = newHead;
+
+	for (int i = 0; i < size - 1; ++i) {
+		otherCurrent = otherCurrent->next;
+		Node<T>* newNode = new Node<T>(*otherCurrent);
+		thisCurrent->next = newNode;
+		tail = thisCurrent->next;
+		thisCurrent = tail;
+	}
+}
+
+/// <summary>
+/// Assignment operator
+/// </summary>
+/// <typeparam name="T">Template Generic Class</typeparam>
+/// <param name="other">The other stack</param>
+/// <returns>This with new nodes</returns>
+template<typename T>
+inline Stack<T>& Stack<T>::operator=(const Stack& other)
+{
+	if (this == &other) {
+		return *this;
+	}
+
+	size = other.size;
+
+	Node<T>* current;
+	for (int i = 0; i < size; ++i) {
+		current = head->next;
+		delete head;
+		head = current;
+	}
+
+	Node<T>* otherCurrent = other.head;
+	Node<T>* thisCurrent;
+
+	Node<T>* newHead = new Node<T>(*otherCurrent);
+	thisCurrent = newHead;
+	head = newHead;
+	tail = newHead;
+
+	for (int i = 0; i < size - 1; ++i) {
+		otherCurrent = otherCurrent->next;
+		Node<T>* newNode = new Node<T>(*otherCurrent);
+		thisCurrent->next = newNode;
+		tail = newNode;
+		thisCurrent = tail;
+	}
+
+	return *this;
+}
+
+/// <summary>
 /// Custom destructor for the class
 /// </summary>
 /// <typeparam name="T">Generic Type</typeparam>
 template<typename T>
 inline Stack<T>::~Stack()
 {
-	
+	Node<T>* current;
+	for (int i = 0; i < size; ++i) {
+		current = head->next;
+		delete head;
+		head = current;
+	}
+	head = nullptr;
+	tail = nullptr;
 }
 
 /// <summary>
@@ -76,12 +160,12 @@ inline void Stack<T>::Pop()
 {
 	Node<T>* current = head;
 	for (int i = 0; i < size - 2; ++i) {
-		current = current.next;
+		current = current->next;
 	}
 	
-	delete current.next;
-	current.next = nullptr;
-	current.next = NULL;
+	delete current->next;
+	current->next = nullptr;
+	tail = current;
 	size--;
 }
 
@@ -91,13 +175,13 @@ inline void Stack<T>::Pop()
 /// <typeparam name="T">Generic Type</typeparam>
 /// <returns>reference to the top element of the stack</returns>
 template<typename T>
-inline T& Stack<T>::Top()
+inline Node<T>* Stack<T>::Top()
 {
 	if (size == 0) {
 		throw std::invalid_argument("Stack is empty!");
 	}
 	else {
-		return tail->item;
+		return tail;
 	}
 }
 
