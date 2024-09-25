@@ -35,11 +35,16 @@ void selectionSort(int toSort[]){
     }
 }
 void insertionSort(int toSort[]) {
-
+    for (int i = 1; i < 10; ++i) {
+        int currentIndex = i;
+        while (toSort[currentIndex - 1] > toSort[currentIndex]) {
+            swap(toSort[currentIndex - 1], toSort[currentIndex]);
+            currentIndex--;
+        }
+    }
 }
 
 void mergeSort(int toSort[]) {
-
 
 }
 
