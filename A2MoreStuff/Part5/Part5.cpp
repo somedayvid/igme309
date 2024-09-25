@@ -68,6 +68,11 @@ int main()
 	* making sure that you aren't trying to copy a stack over itself
 	*/
 
+	//you can see code-wise in my examples from my stack implementation that both populate themselves the same way with the difference being that
+	//the assignment operator also has to manage memory it previously created with the only other big difference in code being the if statement
+	//that just checks to see if the parameter being passed in is just itself in which case the rest of the code doesn't need to execute because
+	//it already is itself
+
 	//code segment: assignment operator
 	//inline Stack<T> & Stack<T>::operator=(const Stack& other) {
 	//	if (this == &other) {
@@ -94,10 +99,15 @@ int main()
 
 #pragma region QuestionTwo
 	//	What is const correctness, and when should you use it ? (5)
+
 	/* Const correctness is I think kind of like ensuring that the variable in question will not under any circumstances be 
 	* changed which from what I can find seems to come up a lot in if statements:
 	* if(x = 100){ doThing(); }
 	* as well as promising to the caller that the passed in variable will not be altered either 
+	* in some of the other part I utilize const correctness in my class parameters such as the assignment operators such as:
+	* Matrix& Matrix::operator*(const Matrix& other) 
+	* using const in this situation ensures that we cant accidentally modify the parameter that is being passed in
+	* and shouldnt even be modified in the first place
 	*/
 #pragma endregion
 
