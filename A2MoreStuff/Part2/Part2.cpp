@@ -22,39 +22,24 @@ void bubbleSort(int toSort[], int size) {
     } while (didSwap);
 }
 void selectionSort(int toSort[]){
-    for (int i = 0; i < sizeof(toSort) / sizeof(*toSort) - 1; ++i)
-    {
-        int minNum = i;
-        for (int j = i + 1; j < sizeof(toSort) / sizeof(*toSort); ++j)
-        {
-            if (toSort[j] < toSort[minNum])
-                minNum = j;
+    int minIndex;
+
+    for (int j = 0; j < 10; ++j) {
+        minIndex = j;
+        for (int i = j; i < 10; ++i) {
+            if (toSort[i] < toSort[minIndex]) {
+                minIndex = i;
+            }
         }
-        if (minNum != i)
-            std::swap(toSort[minNum], toSort[i]);
+        swap(toSort[j], toSort[minIndex]);
     }
 }
 void insertionSort(int toSort[]) {
-    for (int i = 1; i < sizeof(toSort) / sizeof(*toSort); ++i) {
-        int key = toSort[i];
-        int j = i - 1;
 
-        while (j >= 0 && toSort[j] > key) {
-            toSort[j + 1] = toSort[j];
-            j = j - 1;
-        }
-        toSort[j + 1] = key;
-    }
 }
 
 void mergeSort(int toSort[]) {
-    //left = tosort.size/2
-    //right = tosort.size/2
 
-    //if size > 1
-    //    split
-
-    //    compare(left,right)
 
 }
 
