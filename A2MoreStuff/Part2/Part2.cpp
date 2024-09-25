@@ -5,21 +5,21 @@
 #include <iostream>
 #include <vector>
 
+using namespace std;
+
 void bubbleSort(int toSort[], int size) {
     bool didSwap;
 
-    for (int i = 0; i < size - 1; ++i) {
+    do
+    {
         didSwap = false;
-        for (int j = 0; j < size - 1; ++j) {
+        for (int i = 0; i < size - 1; ++i) {
             if (toSort[i] > toSort[i + 1]) {
-                std::swap(toSort[i], toSort[i + 1]);
+                swap(toSort[i], toSort[i + 1]);
                 didSwap = true;
             }
         }
-        if (!didSwap) {
-            break;
-        }
-    }
+    } while (didSwap);
 }
 void selectionSort(int toSort[]){
     for (int i = 0; i < sizeof(toSort) / sizeof(*toSort) - 1; ++i)
@@ -46,67 +46,74 @@ void insertionSort(int toSort[]) {
         toSort[j + 1] = key;
     }
 }
-void merge(int toSort[], int left, int mid, int right) {
 
-    int n1 = mid - left + 1;
-    int n2 = right - mid;
+void mergeSort(int toSort[]) {
+    //left = tosort.size/2
+    //right = tosort.size/2
 
-    // Create temp vectors
-    std::vector<int> L(n1), R(n2);
+    //if size > 1
+    //    split
 
-    // Copy data to temp vectors L[] and R[]
-    for (int i = 0; i < n1; i++)
-        L[i] = toSort[left + i];
-    for (int j = 0; j < n2; j++)
-        R[j] = toSort[mid + 1 + j];
+    //    compare(left,right)
 
-    int i = 0, j = 0;
-    int k = left;
-
-    // Merge the temp vectors back 
-    // into arr[left..right]
-    while (i < n1 && j < n2) {
-        if (L[i] <= R[j]) {
-            toSort[k] = L[i];
-            i++;
-        }
-        else {
-            toSort[k] = R[j];
-            j++;
-        }
-        k++;
-    }
 }
 
-void mergeSort(int toSort[], int left, int right) {
-    if (left >= right) {
-        return;
-    }
-
-    int mid = left + (right - left) / 2;
-    mergeSort(toSort, left, mid);
-    mergeSort(toSort, mid + 1, right);
-    merge(toSort, left, mid, right);
-}
 void quickSort(int toSort[]) {
 
 }
 
 void printOut(int toSort[]) {
     std::cout << "[";
-    for (int i = 0; i < 8; ++i) {
-        std::cout << toSort[i] << ", ";
+    for (int i = 0; i < 10; ++i) {
+        if (i == 9) {
+            cout << toSort[i];
+        }
+        else {
+            cout << toSort[i] << ", ";
+        }
     }
     std::cout << "]" << std::endl;
 }
 
+int getSize(int toSort[]) {
+    return sizeof(toSort) / sizeof(*toSort);
+}
+
+
+
 int main()
 {
-    int array1[] = { 2,31,4,5,2,39,12,23 };
-    int size =  sizeof(array1) / sizeof(*array1);
-    //mergeSort(array1, 0, sizeof(array1) / sizeof(*array1) - 1);
+    int size = 10;
+    int myArray[10] = { 100,20,304,55,60,1, 999,809, 9323,7 };
+    
+    cout << "Choose a sorting algorithm by inputting the corresponding number: " << endl << "1. Bubble Sort" << endl
+        << "2. Selection Sort" << endl << "3. Insertion Sort" << endl << "4. Merge Sort" << endl << "5. Quick Sort" << endl;
+    
+    int input;
+    cin >> input;
 
-    bubbleSort(array1, size);
-    printOut(array1);
+    switch (input)
+    {
+    case 1:
+        bubbleSort(myArray,10);
+        break;
+    case 2:
+        selectionSort(myArray);
+        break;
+    case 3:
+        insertionSort(myArray);
+        break;
+    case 4:
+        //mergeSort();
+        break;
+    case 5:
+        //quickSort();
+        break;
+    default:
+        break;
+    }
+    printOut(myArray);
+
+    
 
 }
