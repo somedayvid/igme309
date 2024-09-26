@@ -1,2 +1,6 @@
 ﻿  Part2.cpp
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part2\Part2.cpp(70,31): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part2\Part2.cpp(74,32): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part2\Part2.cpp(81,27): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
+C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part2\Part2.cpp(87,28): warning C4244: '=': conversion from 'double' to 'int', possible loss of data
   Part2.vcxproj -> C:\Users\david\Documents\GitHub\igme309\A2MoreStuff\Part2\x64\Debug\Part2.exe

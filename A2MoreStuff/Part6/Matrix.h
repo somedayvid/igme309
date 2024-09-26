@@ -30,7 +30,7 @@ public:
 	T determinant();
 	T determinant(T incomingArray[], const int incomingRows, const int incomingColumns, int multiplier = 1);
 	void inverse();
-//	void multiplyByVector(const Vector& other);
+	Matrix& multiplyByVector(Vector<T>& other);
 
 	void print();
 };
@@ -149,7 +149,7 @@ inline Matrix<T>& Matrix<T>::operator*(const Matrix& other)
 				tempDotProduct += heapArray[x] * other.heapArray[y];
 			}
 		}
-		Matrix<T>* newMatrix = new Matrix<T>(newArray, rows, size);
+		Matrix<T>* newMatrix = new Matrix<T>(newArray, rows, rows * other.columns);
 		return *newMatrix;
 	}
 }
@@ -301,13 +301,46 @@ inline void Matrix<T>::inverse()
 	tempArray = nullptr;
 }
 
-//template<class T>
-//inline void Matrix<T>::multiplyByVector(const Vector<T>& other)
-//{
-//	std::cout << other->getSize();
-//}
+template<class T>
+inline Matrix<T>& Matrix<T>::multiplyByVector(Vector<T>& other)
+{
+	if (columns == other.getSize()) {
+		T* newArray = new T[rows]{ NULL };
+		T* tempVectorArray = new T[other.getSize()] { NULL };
+			
+		tempVectorArray[0] = other.getX();
+		tempVectorArray[1] = other.getY();
+		if (other.getSize() == 3) {
+			tempVectorArray[2] = other.getZ();
+		}
 
-/// <summary>
+		for (int i = 0; i < rows; ++i) {
+			T tempDotProduct = 0;
+			for (int j = 0; j < columns; ++j) {
+				int x = 0;
+				int y = 0;
+
+				x = j;
+				if (i > 0) {
+					x += columns * i;
+				}
+
+				y = j;
+				tempDotProduct += heapArray[x] * tempVectorArray[y];
+			}
+			for (int k = 0; k < rows; ++k) {
+				if (newArray[k] == NULL) {
+					newArray[k] = tempDotProduct;
+					break;
+				}
+			}
+		}
+		Matrix<T>* newMatrix = new Matrix<T>(newArray, rows, other.getSize());
+		return *newMatrix;
+	}
+}
+
+/// <summary>1
 /// Prints out all the contents in matrix form with rows and columns
 /// </summary>
 /// <typeparam name="T">Template Generic Type</typeparam>

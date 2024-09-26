@@ -44,13 +44,90 @@ void insertionSort(int toSort[]) {
     }
 }
 
-void mergeSort(int toSort[]) {
+void merge(int toSort[], int start, int mid, int end) {
+    int i, j, k;
+    int n1 = mid - start + 1;
+    int n2 = end - mid;
 
+    double *left = new double[n1];
+    double *right = new double[n2];
+
+    for (i = 0; i < n1; i++)
+    {
+        left[i] = toSort[start + i];
+    }
+    for (j = 0; j < n2; j++)
+    {
+        right[j] = toSort[mid + 1 + j];
+    }
+
+    i = 0;
+    j = 0;
+    k = start;
+
+    while (i < n1 && j < n2) {
+        if (left[i] <= right[j]) {
+            toSort[k] = left[i];
+            i++;
+        }
+        else {
+            toSort[k] = right[j];
+            j++;
+        }
+        k++;
+    }
+
+    while (i < n1) {
+        toSort[k] = left[i];
+        i++;
+        k++;
+    }
+
+    while (j < n2) {
+        toSort[k] = right[j];
+        j++;
+        k++;
+    }
 }
 
-void quickSort(int toSort[]) {
+void mergeSort(int toSort[], int start, int end) {
+    if (start < end) {
+        int midIndex = (start + end) / 2;
 
+        mergeSort(toSort, start, midIndex);
+        mergeSort(toSort, midIndex + 1, end);
+        merge(toSort, start, midIndex, end);
+    }
 }
+
+int partition(int array[], int low, int high) {
+    int pivot = array[high];
+    int i = low - 1;
+
+    for (int j = low; j < high; j++) {
+        if (array[j] <= pivot) {
+            i++;
+            int temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    int temp = array[i + 1];
+    array[i + 1] = array[high];
+    array[high] = temp;
+    return i + 1;
+}
+
+void quicksort(int array[], int low, int high) {
+    if (low < high) {
+        int pivotIndex = partition(array, low, high);
+        quicksort(array, low, pivotIndex - 1);
+        quicksort(array, pivotIndex + 1, high);
+    }
+}
+
+
 
 void printOut(int toSort[]) {
     std::cout << "[";
@@ -94,10 +171,10 @@ int main()
         insertionSort(myArray);
         break;
     case 4:
-        //mergeSort();
+        mergeSort(myArray, 0, 9);
         break;
     case 5:
-        //quickSort();
+        quicksort(myArray,0,9);
         break;
     default:
         break;

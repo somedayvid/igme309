@@ -10,7 +10,7 @@ using namespace std;
 
 float main()
 {
-	//Vector<float>* myVect = new Vector<float>(10, 20);
+	Vector<float>* myVect = new Vector<float>(4,3,1);
 	//Vector<float>* myVect2 = new Vector<float>(5, 10);
 
 	//myVect->print();
@@ -32,16 +32,17 @@ float main()
 
 	//std::cout << sizeof(myaayy);
 
-	Matrix<float>* myMatrix = new Matrix<float>(new float[4]{4,7,2,6}, 2, 4);
+	Matrix<float>* myMatrix = new Matrix<float>(new float[9]{3,2,0,0,4,1,2,0,1}, 3, 9);
 	//myMatrix->print();
 	//Matrix<float>* matrix2 = new Matrix<float>(new float[6]{7,8,9,10,11,12}, 3, 6);
 
-	//myMatrix->multiplyByVector(myVect);
+	Matrix<float>* newerMatrix = new Matrix<float>(myMatrix->multiplyByVector(*myVect));
 	//myMatrix->operator=(myMatrix->operator*(*matrix2));
-	myMatrix->print();
-	myMatrix->inverse();
-	//myMatrix->transpose();
-	myMatrix->print();
+	newerMatrix->print();
+	//myMatrix->print();
+	//myMatrix->inverse();
+	////myMatrix->transpose();
+	//myMatrix->print();
 	//myMatrix->print();
 	//myMatrix->transpose();
 	//myMatrix->print();

@@ -11,7 +11,7 @@ private:
 	float magnitude;
 public:
 	//constructors destructors
-	Vector(T x, T y, T z = NULL);
+	Vector(T x, T y, T z = ' ');
 	~Vector();
 	Vector(const Vector& other);
 
@@ -32,6 +32,10 @@ public:
 	Vector& cross(const Vector& other);
 	void addDimension(T z);
 	int getSize();
+
+	T getX();
+	T getY();
+	T getZ();
 	void print();
 };
 
@@ -47,7 +51,7 @@ inline Vector<T>::Vector(T x, T y, T z)
 {
 	this->x = x;
 	this->y = y;
-	if (z != NULL) {
+	if (z != ' ') {
 		dimension = 3;
 		this->z = z;
 	}
@@ -323,6 +327,24 @@ template<class T>
 inline int Vector<T>::getSize()
 {
 	return dimension;
+}
+
+template<class T>
+inline T Vector<T>::getX()
+{
+	return x;
+}
+
+template<class T>
+inline T Vector<T>::getY()
+{
+	return y;
+}
+
+template<class T>
+inline T Vector<T>::getZ()
+{
+	return z;
 }
 
 /// <summary>
