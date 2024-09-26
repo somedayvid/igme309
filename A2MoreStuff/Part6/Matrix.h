@@ -41,7 +41,6 @@ inline Matrix<T>::Matrix(T myElements[], int numRows, int numElements)
 	heapArray = myElements;
 	rows = numRows;
 	
-
 	columns = numElements/ rows;	
 
 	size = numElements;
@@ -129,25 +128,33 @@ template<class T>
 inline Matrix<T>& Matrix<T>::operator*(const Matrix& other)
 {
 	if (columns == other.rows) {
-		T* newArray = new T[rows * other.columns];
+		T* newArray = new T[rows * other.columns]{ NULL };
 		for (int i = 0; i < rows * other.columns; ++i) {
+			std::cout << "i count: " << i << std::endl;
 			T tempDotProduct = 0;
 			for (int j = 0; j < columns; ++j) {
-				int x = 0;
+				int x = 0; // j = 0
 				int y = 0;
 
-				x = j;
-				if (i > other.columns - 1) {
-					x += columns;
+				x = j; //0
+				if (i > other.columns - 1) { //4 > 2 yes
+					x += i/other.columns * columns; // 0 += 3 * 4/3 ---> 3
 				}
 
-				y = j * other.columns;
-				
-				if(i % 2 != 0) {
-					y += 1;
-				}
+
+				y = j * other.columns + i % other.columns; // y = 6 + 1 ----> 7
+								
+
+
 				tempDotProduct += heapArray[x] * other.heapArray[y];
+				std::cout << "       j count: " << j << " is: " << heapArray[x] << " " << other.heapArray[y] << std::endl;
 			}
+			for (int k = 0; k < rows * other.columns; ++k) {
+				if (newArray[k] == NULL) {
+					newArray[k] = tempDotProduct;
+					break;
+				}
+			} 
 		}
 		Matrix<T>* newMatrix = new Matrix<T>(newArray, rows, rows * other.columns);
 		return *newMatrix;
