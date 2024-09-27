@@ -7,6 +7,11 @@
 
 using namespace std;
 
+/// <summary>
+/// Compares values and swaps lower values to the left as it goes down the array 
+/// </summary>
+/// <param name="toSort">The array to sort</param>
+/// <param name="size">Size of array</param>
 void bubbleSort(int toSort[], int size) {
     bool didSwap;
 
@@ -16,17 +21,22 @@ void bubbleSort(int toSort[], int size) {
         for (int i = 0; i < size - 1; ++i) {
             if (toSort[i] > toSort[i + 1]) {
                 swap(toSort[i], toSort[i + 1]);
-                didSwap = true;
+                didSwap = true; //if the loop did not swap any elements the array is in order
             }
         }
     } while (didSwap);
 }
-void selectionSort(int toSort[]){
+
+/// <summary>
+/// Orders an by choosing the smallest value from the unsorted part of the list and moving it to the sorted part
+/// </summary>
+/// <param name="toSort">Array to Sort</param>
+void selectionSort(int toSort[], int size){
     int minIndex;
 
-    for (int j = 0; j < 10; ++j) {
+    for (int j = 0; j < size; ++j) {
         minIndex = j;
-        for (int i = j; i < 10; ++i) {
+        for (int i = j; i < size; ++i) {
             if (toSort[i] < toSort[minIndex]) {
                 minIndex = i;
             }
@@ -34,8 +44,14 @@ void selectionSort(int toSort[]){
         swap(toSort[j], toSort[minIndex]);
     }
 }
-void insertionSort(int toSort[]) {
-    for (int i = 1; i < 10; ++i) {
+
+/// <summary>
+/// Orders an array by comparing values to the ones they are next to in the unsorted part of the array and swapping
+/// </summary>
+/// <param name="toSort">Array to Sort</param>
+/// <param name="size">Size of array</param>
+void insertionSort(int toSort[], int size) {
+    for (int i = 1; i < size; ++i) {
         int currentIndex = i;
         while (toSort[currentIndex - 1] > toSort[currentIndex]) {
             swap(toSort[currentIndex - 1], toSort[currentIndex]);
@@ -44,90 +60,120 @@ void insertionSort(int toSort[]) {
     }
 }
 
+/// <summary>
+/// Merges all of the subarrays back by comparing them and merging them
+/// </summary>
+/// <param name="toSort">Array to Sort</param>
+/// <param name="start">First element in array</param>
+/// <param name="mid">Middle element in array</param>
+/// <param name="end">Last element in array</param>
 void merge(int toSort[], int start, int mid, int end) {
-    int i, j, k;
     int n1 = mid - start + 1;
     int n2 = end - mid;
-
+    
+    //holds temporary information
     double *left = new double[n1];
     double *right = new double[n2];
 
-    for (i = 0; i < n1; i++)
+    for (int i = 0; i < n1; ++i)
     {
         left[i] = toSort[start + i];
     }
-    for (j = 0; j < n2; j++)
+    for (int j = 0; j < n2; ++j)
     {
         right[j] = toSort[mid + 1 + j];
     }
 
-    i = 0;
-    j = 0;
-    k = start;
+    int x = 0;
+    int y = 0;
+    int z = start;
 
-    while (i < n1 && j < n2) {
-        if (left[i] <= right[j]) {
-            toSort[k] = left[i];
-            i++;
+    //comparing values and merging them
+    while (x < n1 && y < n2) {
+        if (left[x] <= right[y]) {
+            toSort[z] = left[x];
+            x++;
         }
         else {
-            toSort[k] = right[j];
-            j++;
+            toSort[z] = right[y];
+            y++;
         }
-        k++;
+        z++;
     }
 
-    while (i < n1) {
-        toSort[k] = left[i];
-        i++;
-        k++;
+    //gets the rest of the elements
+    while (x < n1) {
+        toSort[z] = left[x];
+        x++;
+        z++;
     }
 
-    while (j < n2) {
-        toSort[k] = right[j];
-        j++;
-        k++;
+    while (y < n2) {
+        toSort[z] = right[y];
+        y++;
+        z++;
     }
 }
 
+/// <summary>
+/// Orders the array by splitting the main array all the way into 1 space subarrays and them ordering them
+/// by comparing and remerging them
+/// </summary>
+/// <param name="toSort">Array to sort</param>
+/// <param name="start">First element in the array to be sorted</param>
+/// <param name="end">Last element in the array to be sorted</param>
 void mergeSort(int toSort[], int start, int end) {
     if (start < end) {
         int midIndex = (start + end) / 2;
 
+        //reucursively splitting the array into subarrays first from 
+        //the two parts of the front half and back half and then
+        //continuing from there
         mergeSort(toSort, start, midIndex);
         mergeSort(toSort, midIndex + 1, end);
         merge(toSort, start, midIndex, end);
     }
 }
 
-int partition(int array[], int low, int high) {
-    int pivot = array[high];
-    int i = low - 1;
+/// <summary>
+/// Sorts the elements in the partition so that the all the smaller elements than the pivot are on the left
+/// while the larger ones are on the right and then swaps the pivot with the middle element
+/// </summary>
+/// <param name="array"></param>
+/// <param name="low"></param>
+/// <param name="high"></param>
+/// <returns></returns>
+int partition(int toSort[], int start, int end) {
+    int pivot = toSort[end];
+    int i = start - 1;
 
-    for (int j = low; j < high; j++) {
-        if (array[j] <= pivot) {
-            i++;
-            int temp = array[i];
-            array[i] = array[j];
-            array[j] = temp;
+    //checking and swapping elements
+    for (int j = start; j < end; ++j) {
+        if (toSort[j] <= pivot) {
+            ++i;
+            swap(toSort[i], toSort[j]);
         }
     }
 
-    int temp = array[i + 1];
-    array[i + 1] = array[high];
-    array[high] = temp;
+    //swap pivot 
+    swap(toSort[i + 1], toSort[end]);
     return i + 1;
 }
 
-void quicksort(int array[], int low, int high) {
-    if (low < high) {
-        int pivotIndex = partition(array, low, high);
-        quicksort(array, low, pivotIndex - 1);
-        quicksort(array, pivotIndex + 1, high);
+/// <summary>
+/// Calls quickSort algorithm which recursively sorts an array by comparing elements
+/// to a pivot and sorting them accordingly by size
+/// </summary>
+/// <param name="array">Array to Sort</param>
+/// <param name="low">First</param>
+/// <param name="high"></param>
+void quicksort(int array[], int start, int end) {
+    if (start < end) {
+        int pivotIndex = partition(array, start, end);
+        quicksort(array, start, pivotIndex - 1);
+        quicksort(array, pivotIndex + 1, end);
     }
 }
-
-
 
 void printOut(int toSort[]) {
     std::cout << "[";
@@ -147,12 +193,19 @@ int getSize(int toSort[]) {
 }
 
 
-
 int main()
 {
     int size = 10;
     int myArray[10] = { 100,20,304,55,60,1, 999,809, 9323,7 };
     
+    cout << "Array to be sorted: " << endl;
+
+    for (int i = 0; i < 10; ++i) {
+        cout << myArray[i] << " ";
+    }
+
+    cout << endl << endl;
+
     cout << "Choose a sorting algorithm by inputting the corresponding number: " << endl << "1. Bubble Sort" << endl
         << "2. Selection Sort" << endl << "3. Insertion Sort" << endl << "4. Merge Sort" << endl << "5. Quick Sort" << endl;
     
@@ -165,10 +218,10 @@ int main()
         bubbleSort(myArray,10);
         break;
     case 2:
-        selectionSort(myArray);
+        selectionSort(myArray, 10);
         break;
     case 3:
-        insertionSort(myArray);
+        insertionSort(myArray, 10);
         break;
     case 4:
         mergeSort(myArray, 0, 9);
